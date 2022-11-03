@@ -10,8 +10,18 @@ class Inventory with ChangeNotifier {
   // _items cannot be accessed from outside this class...so it requires "getters".
   List<Product> _products = MOCK_INVENTORY;
 
-  List<Product> get products {
+  List<Product> get allProducts {
+    // The filtering logic was moved to the ProductsOverviewScreen widget.
+    // if (_showFavourites) {
+    //   // Note that _products is a list, so you must return .toList().
+    //   return _products.where((indexProduct) => indexProduct.isFavourite).toList();
+    // } else {
     return [..._products];
+    // }
+  }
+
+  List<Product> get favouriteProducts {
+    return _products.where((indexProduct) => indexProduct.isFavourite).toList();
   }
 
   // The getter returns 'items' which is a copy of '_items'. If widgets could
@@ -24,6 +34,23 @@ class Inventory with ChangeNotifier {
   Product findProductbyId(String productId) {
     return _products.firstWhere((product) => product.id == productId);
   }
+
+  // We can return a copy of the list with only products that have been marked
+  // favourite. The showFavourites is set by the PopUpMenu in ProductsOverviewScreen.
+  // _showFavourites can be private - only this class will use it.
+  // So we need to call an Inventory.method() that sets _showFavourites.
+  // Note this would apply to the app-wide state. But we're really only interested
+  // in this functionality in the ProductsOverviewScreen.
+  // You should manage filtering logic in a widget - not globally.
+  // // bool _showFavourites = false;
+  // // void showFavourites() {
+  // // 	_showFavourites = true;
+  // // 	notifyListeners();
+  // // }
+  // // void showAll() {
+  // // 	_showFavourites = false;
+  // // 	notifyListeners();
+  // // }
 
   // Need a function to tell all listeners that state data has changed.
   // For example, when a product is added with the addProduct() method,

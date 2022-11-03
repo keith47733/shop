@@ -2,6 +2,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/cart.dart';
 import 'providers/inventory.dart';
 import 'screens/product_detail_screen.dart';
 import 'screens/products_overview_screen.dart';
@@ -38,8 +39,13 @@ class MyApp extends StatelessWidget {
 
         // The builder Provier is preferred b/c this is not part of a list.
         // .value is a little less efficient and may lead to unnecesary rebuilds
-        return ChangeNotifierProvider(
-          create: (context) => Inventory(),
+        // You can nest ChangeNotifierProviders, but it gets ugly quickly!
+        // Use MultiProvider
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (ctx) => Inventory()),
+            ChangeNotifierProvider(create: (ctx) => Cart()),
+          ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Shop',
