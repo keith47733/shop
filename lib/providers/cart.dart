@@ -7,18 +7,33 @@ import 'cart_item.dart';
 // ProductsOverviewScreen() to put cart in AppBar, and
 // ProductOverviewTile() to addToCart from GridTile,
 class Cart with ChangeNotifier {
-	// Initializing with {} ensures _items will never be null, thus we don't have to
-	// worry about null checks.
+  // Initializing with {} ensures _items will never be null, thus we don't have to
+  // worry about null checks.
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
     return {..._items};
   }
 
-  int cartCount() {
+  int numberOfCartItems() {
     // We're just gonna count the number of different products, not the total
     // number of items including products with qty > 1.
-    return _items.length;
+    // return _items.length;
+    int numberOfCartItems = 0;
+    _items.forEach((key, value) {
+      numberOfCartItems = numberOfCartItems + _items[key]!.quantity;
+    });
+    return numberOfCartItems;
+  }
+
+  // Getters don't use a parameter list.
+  // ie, don't put () after the getter name.
+  double get cartTotal {
+    double total = 0.0;
+    _items.forEach((key, cartItem) {
+      total = total + (cartItem.quantity * cartItem.price);
+    });
+    return total;
   }
 
   void addItem({
@@ -32,7 +47,7 @@ class Cart with ChangeNotifier {
       _items.update(
         productId,
         (existingCartItem) => CartItem(
-          cartItemId: existingCartItem.cartItemId,
+          id: existingCartItem.id,
           title: existingCartItem.title,
           price: existingCartItem.price,
           quantity: existingCartItem.quantity + 1,
@@ -41,15 +56,23 @@ class Cart with ChangeNotifier {
     } else {
       _items.putIfAbsent(
         productId,
-        // .putIfAbsent() requires a function that returns a class object () =>
+        // .putIfAbsent() requires a function that returns, in this case, a class
+        // object () => CartItem to add _items
         () => CartItem(
-          cartItemId: DateTime.now().toString(), // Create unique ID
+          id: DateTime.now().toString(), // Create unique ID
           title: title,
           price: price,
           quantity: 1,
         ),
       );
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    // productId is a key in our _items map. Maps are conventient since they
+    // have built in add and remove functions.
+    _items.remove(productId);
     notifyListeners();
   }
 }

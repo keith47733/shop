@@ -1,3 +1,4 @@
+import 'package:Shop/screens/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,10 +58,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           Consumer<Cart>(
             builder: ((_, cart, badgeChild) => Badge(
                   child: badgeChild!, // This is the Badge widget's child
-                  value: cart.cartCount().toString(),
+                  value: cart.numberOfCartItems().toString(),
                 )),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
               icon: Icon(Icons.shopping_cart),
             ), // The consumer's child outside the builder won't be rebuilt
           ),

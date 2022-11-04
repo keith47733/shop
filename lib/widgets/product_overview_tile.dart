@@ -44,9 +44,9 @@ class ProductOverviewTile extends StatelessWidget {
         child: GridTile(
           header: Padding(
             padding: const EdgeInsets.all(Layout.SPACING),
-            child: FractionallySizedBox(
+            child: FittedBox(
+							fit: BoxFit.scaleDown,
               alignment: Alignment.topLeft,
-              widthFactor: 0.3,
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Layout.RADIUS),
@@ -55,11 +55,11 @@ class ProductOverviewTile extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(Layout.SPACING / 2),
                   child: Text(
-                    '\$${product.price.toString()}',
+                    '\$${product.price.toStringAsFixed(2)}',
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
-                        .titleLarge!
+                        .titleMedium!
                         .copyWith(color: Theme.of(context).colorScheme.onSecondary),
                   ),
                 ),
@@ -73,10 +73,10 @@ class ProductOverviewTile extends StatelessWidget {
           footer: GridTileBar(
             backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
             leading: Consumer<Product>(
-              // Interesting...you need to use a different variable than the "main"
-              // context required for Theme below. Use ctx in the Consumer builder.
-              // You can specify a child in the builder and a child: argument for
-              // aspects of the widget that don't need to be rebuilt.
+              // Interesting...you need to use a different variable than the "context"
+              // context required for Theme below. Use a different "ctx" in the
+							// Consumer builder. You can specify a child in the builder and a child:
+							// argument for aspects of the widget that don't need to be rebuilt.
               // (If a static child is not required, use '_')
               builder: (ctx, currentProduct, _) => IconButton(
                 onPressed: () {
