@@ -1,12 +1,13 @@
-import 'package:Shop/screens/cart_screen.dart';
+import 'package:Shop/screens/cart_screen/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart.dart';
-import '../providers/inventory.dart';
-import '../styles/layout.dart';
-import '../widgets/badge.dart';
-import '../widgets/product_overview_tile.dart';
+import '../../providers/cart.dart';
+import '../../providers/products.dart';
+import '../../styles/layout.dart';
+import '../../widgets/app_drawer.dart';
+import 'local_widgets/badge.dart';
+import 'local_widgets/product_overview_tile.dart';
 
 enum Filter {
   showFavourites,
@@ -30,7 +31,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     // We only want to rebuild the entire list if Inventory._showFavourites changes.
     // So we only need to fetch that property since the list won't change.
     // // final displayProducts = Provider.of<Inventory>(context, listen: false);
-    // But we want to provide filtering login within this widget screen.
+    // But generally want to provide filtering login within widget not
+    // model/provider.
     return Scaffold(
       appBar: AppBar(
         title: Text('Shop'),
@@ -51,14 +53,14 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             icon: Icon(Icons.more_vert),
             itemBuilder: (_) => [
               // More verbose to use enum for values (initialized above).
-              PopupMenuItem(child: Text('Show only favourites'), value: Filter.showFavourites),
+              PopupMenuItem(child: Text('Show favourites'), value: Filter.showFavourites),
               PopupMenuItem(child: Text('Show all'), value: Filter.showAll),
             ],
           ),
           Consumer<Cart>(
             builder: ((_, cart, badgeChild) => Badge(
                   child: badgeChild!, // This is the Badge widget's child
-                  value: cart.numberOfCartItems().toString(),
+                  value: cart.numberOfCartItems.toString(),
                 )),
             child: IconButton(
               onPressed: () {
@@ -69,6 +71,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
+      drawer: AppDrawer(),
       // Use GridView.builder() when you don't know how many items you have.
       // Only the items on the screen will be rendered (for long lists).
       body: ProductsGridView(context, _showFavourites),
@@ -90,15 +93,14 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     // // }
     // // // final products = productsProvider.allProducts;
 
-    // Now combine the Provider statement and apply filtering logic:
-    final products = _showFavourites
-        ? Provider.of<Inventory>(context).favouriteProducts
-        : Provider.of<Inventory>(context).allProducts;
+    // Now combine the Provider statements and apply filtering logic:
+    final products =
+        _showFavourites ? Provider.of<Products>(context).favouriteProducts : Provider.of<Products>(context).allProducts;
 
     return products.isEmpty
         ? Center(child: Text('You haven\'t picked any favourites yet.'))
         : GridView.builder(
-            padding: const EdgeInsets.all(Layout.SPACING),
+            padding: Layout.MARGINS_ALL,
             // Defines the grid's structure.
             // WithFixedCrossAxisCount specifies how many columns.
             // WithMaxCrossAxisExtent which defines a width in pixels and fits as
@@ -112,12 +114,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             itemCount: products.length,
             // Defines how each grid item should look
             itemBuilder: (BuildContext context, int index) {
-              // Even with advanced state management, it's still acceptable to pass
-              // arguements to custom widgets.
+              // Even with advanced state management, it's still acceptable to pass arguments to custom widgets.
               // If the context is not required, you can use a .value Provider.
-              // In fact, this is the preferred method for ListViews, GridViews, where it
-              // only renders the visible items. Passing context will cause bugs in the list
-              // because Flutter will recycle data b/c context is only for visible items.
+              // In fact, this is the preferred method for ListViews, GridViews, where it only renders the visible items. Passing context will cause bugs in the list since Flutter recycles state data for the visible items.
               // .value Provider attaches data to all items in list and used when built
               // on-screen.
               return ChangeNotifierProvider.value(

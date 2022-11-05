@@ -1,16 +1,16 @@
 import 'package:Shop/mocks/mock_inventory.dart';
-import 'package:Shop/providers/product.dart';
+import 'package:Shop/providers/product_item.dart';
 import 'package:flutter/material.dart';
 
-class Inventory with ChangeNotifier {
+class Products with ChangeNotifier {
   // The Products object class inherits properties/methods from ChangeProvider.
   // (eg, like an inherited widget.)
 
   // Not final...will change.
   // _items cannot be accessed from outside this class...so it requires "getters".
-  List<Product> _products = MOCK_INVENTORY;
+  List<ProductItem> _products = MOCK_INVENTORY;
 
-  List<Product> get allProducts {
+  List<ProductItem> get allProducts {
     // The filtering logic was moved to the ProductsOverviewScreen widget.
     // if (_showFavourites) {
     //   // Note that _products is a list, so you must return .toList().
@@ -20,7 +20,7 @@ class Inventory with ChangeNotifier {
     // }
   }
 
-  List<Product> get favouriteProducts {
+  List<ProductItem> get favouriteProducts {
     return _products.where((indexProduct) => indexProduct.isFavourite).toList();
   }
 
@@ -31,7 +31,7 @@ class Inventory with ChangeNotifier {
 
   // This will return a Product instance where the product's id matches
   // the productId string passed to the getter.
-  Product findProductbyId(String productId) {
+  ProductItem findProductbyId(String productId) {
     return _products.firstWhere((product) => product.id == productId);
   }
 

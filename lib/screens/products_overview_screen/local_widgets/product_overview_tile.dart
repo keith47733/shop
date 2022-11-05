@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart.dart';
-import '../providers/product.dart';
-import '../screens/product_detail_screen.dart';
-import '../styles/layout.dart';
+import '../../../providers/cart.dart';
+import '../../../providers/product_item.dart';
+import '../../product_detail_screen/product_detail_screen.dart';
+import '../../../styles/layout.dart';
 
 // Interestingly, we don't need a Stateful widget when using Provider/Consumer.
 
@@ -28,7 +28,7 @@ class ProductOverviewTile extends StatelessWidget {
     // and wrap individual widgets with Consumer<Product>. The major advantage is
     // ONLY the widget(s) wrapped in Consumer listener will rebuild, not the entire
     // widget build().
-    final product = Provider.of<Product>(context, listen: false);
+    final product = Provider.of<ProductItem>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     // A GridTile for a GridView is analogous to a ListTile for a ListView.
     return ClipRRect(
@@ -45,7 +45,7 @@ class ProductOverviewTile extends StatelessWidget {
           header: Padding(
             padding: const EdgeInsets.all(Layout.SPACING),
             child: FittedBox(
-							fit: BoxFit.scaleDown,
+              fit: BoxFit.scaleDown,
               alignment: Alignment.topLeft,
               child: Container(
                 decoration: BoxDecoration(
@@ -72,16 +72,16 @@ class ProductOverviewTile extends StatelessWidget {
           ),
           footer: GridTileBar(
             backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
-            leading: Consumer<Product>(
+            leading: Consumer<ProductItem>(
               // Interesting...you need to use a different variable than the "context"
               // context required for Theme below. Use a different "ctx" in the
-							// Consumer builder. You can specify a child in the builder and a child:
-							// argument for aspects of the widget that don't need to be rebuilt.
+              // Consumer builder. You can specify a child in the builder and a child:
+              // argument for aspects of the widget that don't need to be rebuilt.
               // (If a static child is not required, use '_')
               builder: (ctx, currentProduct, _) => IconButton(
                 onPressed: () {
-                  // This calls the toggleFavorite() method which in turn notifies
-                  // listeners.
+                  // This calls the toggleFavorite() method which in turn
+                  // notifies listeners.
                   currentProduct.toggleFavourite();
                 },
                 icon: currentProduct.isFavourite
@@ -103,7 +103,7 @@ class ProductOverviewTile extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             trailing: IconButton(
-              onPressed: () => cart.addItem(
+              onPressed: () => cart.addCartItem(
                 productId: product.id,
                 title: product.title,
                 price: product.price,

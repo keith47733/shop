@@ -1,12 +1,14 @@
-import 'package:Shop/screens/cart_screen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/cart.dart';
-import 'providers/inventory.dart';
-import 'screens/product_detail_screen.dart';
-import 'screens/products_overview_screen.dart';
+import 'providers/orders.dart';
+import 'providers/products.dart';
+import 'screens/cart_screen/cart_screen.dart';
+import 'screens/orders_screen/orders_screen.dart';
+import 'screens/product_detail_screen/product_detail_screen.dart';
+import 'screens/products_overview_screen/products_overview_screen.dart';
 import 'styles/app_theme.dart';
 
 void main() {
@@ -20,7 +22,7 @@ void main() {
 // (eg, Loading spinner, form inputs, etc.)
 
 // Flutter recommends using the PROVIDER PACKAGE.
-// All state date is stored in a central location, and each widgets can
+// All state date is stored in a central location, and each widget can
 // "listen" to the provider to fetch data instead of passing through constructors.
 // The widget's build() method runs anytime data from the "listener" for that
 // widget changes.
@@ -38,14 +40,15 @@ class MyApp extends StatelessWidget {
         // eg, In this case, it won't rebuild MaterialApp.
         // // create: (context) => Inventory(),
 
-        // The builder Provier is preferred b/c this is not part of a list.
-        // .value is a little less efficient and may lead to unnecesary rebuilds
+        // The builder ChangeNotifierProvier (ctx) => is preferred b/c this is not part of a list.  ChangeNotifierProvier.value (value: Class) is a little less efficient and may lead to unnecesary rebuilds.
         // You can nest ChangeNotifierProviders, but it gets ugly quickly!
         // Use MultiProvider
+        // Note the providers to not trigger a rebuild - only the listeners trigger a rebuild when something in the provider changes.
         return MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (ctx) => Inventory()),
+            ChangeNotifierProvider(create: (ctx) => Products()),
             ChangeNotifierProvider(create: (ctx) => Cart()),
+            ChangeNotifierProvider(create: (ctx) => Orders()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -54,8 +57,9 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme(darkColorScheme),
             home: ProductsOverviewScreen(),
             routes: {
-              ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
-              CartScreen.routeName: (context) => CartScreen(),
+              ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+              CartScreen.routeName: (ctx) => CartScreen(),
+              OrdersScreen.routeName: (ctx) => OrdersScreen(),
             },
           ),
         );

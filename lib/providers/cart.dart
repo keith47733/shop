@@ -9,19 +9,19 @@ import 'cart_item.dart';
 class Cart with ChangeNotifier {
   // Initializing with {} ensures _items will never be null, thus we don't have to
   // worry about null checks.
-  Map<String, CartItem> _items = {};
+  Map<String, CartItem> _cartItems = {};
 
-  Map<String, CartItem> get items {
-    return {..._items};
+  Map<String, CartItem> get cartItems {
+    return {..._cartItems};
   }
 
-  int numberOfCartItems() {
+  int get numberOfCartItems {
     // We're just gonna count the number of different products, not the total
     // number of items including products with qty > 1.
     // return _items.length;
     int numberOfCartItems = 0;
-    _items.forEach((key, value) {
-      numberOfCartItems = numberOfCartItems + _items[key]!.quantity;
+    _cartItems.forEach((key, value) {
+      numberOfCartItems = numberOfCartItems + _cartItems[key]!.quantity;
     });
     return numberOfCartItems;
   }
@@ -30,21 +30,21 @@ class Cart with ChangeNotifier {
   // ie, don't put () after the getter name.
   double get cartTotal {
     double total = 0.0;
-    _items.forEach((key, cartItem) {
+    _cartItems.forEach((key, cartItem) {
       total = total + (cartItem.quantity * cartItem.price);
     });
     return total;
   }
 
-  void addItem({
+  void addCartItem({
     required String productId,
     required String title,
     required double price,
   }) {
-    if (_items.containsKey(productId)) {
+    if (_cartItems.containsKey(productId)) {
       // .update() returns CartItem object with matching productId and passes it
       // to a function to update the existingCartItem.
-      _items.update(
+      _cartItems.update(
         productId,
         (existingCartItem) => CartItem(
           id: existingCartItem.id,
@@ -54,7 +54,7 @@ class Cart with ChangeNotifier {
         ),
       );
     } else {
-      _items.putIfAbsent(
+      _cartItems.putIfAbsent(
         productId,
         // .putIfAbsent() requires a function that returns, in this case, a class
         // object () => CartItem to add _items
@@ -69,10 +69,16 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeItem(String productId) {
+  void removeCartItem(String productId) {
     // productId is a key in our _items map. Maps are conventient since they
     // have built in add and remove functions.
-    _items.remove(productId);
+    _cartItems.remove(productId);
     notifyListeners();
   }
+
+	// Need to clear the cart once an order is placed.
+	void clearCart() {
+		_cartItems = {};
+		notifyListeners();
+	}
 }

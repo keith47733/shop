@@ -29,10 +29,14 @@ class Badge extends StatelessWidget {
               minWidth: 20,
               minHeight: 20,
             ),
-            child: Text(
-              value,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onTertiary),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: Text(
+                key: ValueKey(value),
+                value,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onTertiary),
+              ),
             ),
           ),
         )
