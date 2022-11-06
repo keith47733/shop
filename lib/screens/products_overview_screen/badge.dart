@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../styles/layout.dart';
+
 class Badge extends StatelessWidget {
   final Widget child;
   final String value;
@@ -17,7 +19,7 @@ class Badge extends StatelessWidget {
       children: [
         child,
         Positioned(
-          right: 6,
+          right: 6 + Layout.SPACING / 2,
           top: 6,
           child: Container(
             padding: EdgeInsets.all(3),

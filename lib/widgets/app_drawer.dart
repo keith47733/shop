@@ -1,7 +1,9 @@
+import 'package:Shop/screens/products_overview_screen/products_overview_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../styles/layout.dart';
+import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
+import '../styles/layout.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -10,7 +12,7 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: Text('Shop'),
+            title: Text('Bitches Be Shopping'),
             automaticallyImplyLeading: false,
           ),
           Padding(
@@ -22,37 +24,29 @@ class AppDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ListTile(
-                  onTap: () => {
-                    Navigator.of(context).pushReplacementNamed('/'),
-                  },
-                  leading: Icon(
-                    Icons.shop,
-                    size: Layout.ICONSIZE * 0.8,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  title: Text(
-                    'Products',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
+                MenuOption(
+                  context: context,
+                  handler: allProductsHandler,
+                  icon: Icons.shop,
+                  title: 'All Products',
                 ),
-                ListTile(
-                  onTap: () => {
-                    Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName),
-                  },
-                  leading: Icon(
-                    Icons.payment,
-                    size: Layout.ICONSIZE * 0.8,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  title: Text(
-                    'My Orders',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
+                MenuOption(
+                  context: context,
+                  handler: favouriteProductsHandler,
+                  icon: Icons.favorite_outline,
+                  title: 'Favourite Products',
+                ),
+                MenuOption(
+                  context: context,
+                  handler: cartHandler,
+                  icon: Icons.shopping_cart,
+                  title: 'Cart',
+                ),
+                MenuOption(
+                  context: context,
+                  handler: ordersHandler,
+                  icon: Icons.payment,
+                  title: 'Orders',
                 ),
               ],
             ),
@@ -60,5 +54,45 @@ class AppDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget MenuOption({
+    required BuildContext context,
+    required Function handler,
+    required IconData icon,
+    required String title,
+  }) {
+    return ListTile(
+      onTap: () => handler(context),
+      leading: Icon(
+        icon,
+        size: Layout.ICONSIZE * 0.8,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+      ),
+    );
+  }
+
+  allProductsHandler(context) {
+    Layout.showFavourites = false;
+    Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
+  }
+
+  void favouriteProductsHandler(context) {
+    Layout.showFavourites = true;
+    Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
+  }
+
+  void cartHandler(context) {
+    Navigator.of(context).pushReplacementNamed(CartScreen.routeName);
+  }
+
+  void ordersHandler(context) {
+    Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
   }
 }

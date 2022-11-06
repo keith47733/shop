@@ -16,34 +16,24 @@ void main() {
 }
 
 // STATE is essentially DATA that may change which in turn affects the UI.
-// APP_WIDE STATE: Affects the entire app or significant parts of it.
-// (eg, User login/authentication, products from database server, etc.)
-// WIDGET STATE: Affects only the widget it's in.
-// (eg, Loading spinner, form inputs, etc.)
+// APP_WIDE STATE: Affects the entire app or significant parts of it. eg, User login/authentication, products from database server, etc.
+// WIDGET STATE: Affects only the widget it's in. eg, Loading spinner, form inputs, etc.
 
-// Flutter recommends using the PROVIDER PACKAGE.
-// All state date is stored in a central location, and each widget can
-// "listen" to the provider to fetch data instead of passing through constructors.
-// The widget's build() method runs anytime data from the "listener" for that
-// widget changes.
-// You can have multiple data providers and listeners in the app and in each widget.
+// Flutter recommends using the PROVIDER PACKAGE. All state date is stored in a central location, and each widget can "listen" to the provider to fetch data instead of passing through constructors. The widget's build() method runs anytime data from the "listener" for that widget changes. You can have multiple data providers and listeners in the app and in each widget.
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightColorScheme, ColorScheme? darkColorScheme) {
-        // The return; in build() gets wrapped with a ChangeNotifierProvider.
-        // // return ChangeNotifierProvider(
-        // Provides an instance of new/revised data to only the child widgets that
-        // are listening with, for exmaple, Provider.of<Inventory>(context);
-        // eg, In this case, it won't rebuild MaterialApp.
-        // // create: (context) => Inventory(),
+        // // return ChangeNotifierProvider();
+        // The return; in build() gets wrapped with a ChangeNotifierProvider which provides an instance of new/revised data to only the child widgets that are listening with, for example, Provider.of<Inventory>(context); eg, In this case, it won't rebuild MaterialApp.
 
+        // // create: (context) => Inventory(),
         // The builder ChangeNotifierProvier (ctx) => is preferred b/c this is not part of a list.  ChangeNotifierProvier.value (value: Class) is a little less efficient and may lead to unnecesary rebuilds.
-        // You can nest ChangeNotifierProviders, but it gets ugly quickly!
-        // Use MultiProvider
-        // Note the providers to not trigger a rebuild - only the listeners trigger a rebuild when something in the provider changes.
+        // You can nest ChangeNotifierProviders, but it gets ugly quickly, so MultiProvider(providers: []).
+
+        // Note the providers/change notifiers do not trigger a rebuild - only the listeners trigger a rebuild when something in the provider changes.
         return MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (ctx) => Products()),
@@ -57,6 +47,7 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme(darkColorScheme),
             home: ProductsOverviewScreen(),
             routes: {
+							//ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
               ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
               CartScreen.routeName: (ctx) => CartScreen(),
               OrdersScreen.routeName: (ctx) => OrdersScreen(),

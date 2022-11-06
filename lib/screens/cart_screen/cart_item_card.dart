@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../styles/layout.dart';
+
 import '../../../providers/cart.dart';
+import '../../../styles/layout.dart';
 
 class CartItemCard extends StatelessWidget {
   final String cartItemId;
@@ -20,6 +21,7 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // This makes it easier to match the size of the Card to the underlying background: when the card is swiped/dismissed.
     final itemTileMargins = const EdgeInsets.only(
       top: Layout.SPACING / 2,
       left: Layout.SPACING / 3,
@@ -28,14 +30,14 @@ class CartItemCard extends StatelessWidget {
 
     // Dismissable makes the CardItemTile dismissable. The Dismissable widget does all the heavy lifting (eg, animations) so a Stateful widget is not required.
     return Dismissible(
-      // All key arguments can be of different types. Here, we want to make sure each ID is unique so use ValueKey with the CardItem id passed from CartScreen.
+      // All key arguments can be of different types. Here, we want to make sure each ID is unique so use ValueKey with the cardItemId passed from CartScreen.
       key: ValueKey(cartItemId),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
-        // Call the removeItem() method from Cart class and pass the productId that was passed to the CardItemDetail from the CartScreen. (Therefore, we don't need to listen for changes.)
+        // Only call the removeItem() method from Cart class and pass the productId that was passed to the CardItemDetail from the CartScreen. (Therefore, we don't need to listen for changes.)
         Provider.of<Cart>(context, listen: false).removeCartItem(productId);
       },
-      // Background widget is shown behind dissmissable once you start swiping.
+      // background: widget is shown behind dissmissable once you start swiping.
       background: Container(
         margin: itemTileMargins,
         padding: const EdgeInsets.only(right: Layout.SPACING * 1.5),
@@ -61,7 +63,9 @@ class CartItemCard extends StatelessWidget {
               backgroundColor: Theme.of(context).colorScheme.tertiary,
               child: Text(
                 '$quantity',
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onTertiary),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onTertiary,
+                    ),
               ),
             ),
             title: Text(title),
@@ -69,13 +73,14 @@ class CartItemCard extends StatelessWidget {
               'x \$${(price)}',
             ),
             trailing: Chip(
-              // Want to display the total cost in cart. First we need to setup listener for cart and then best to call logic from the model provider with a getter.
+              // Want to display the total cost in cart. First we need to setup listener for cart and then best to put logic in the model/provider with a get method.
               backgroundColor: Theme.of(context).colorScheme.tertiary,
               label: Text(
                 // toString() isn't required with {string interpolation}
                 '\$${(quantity * price).toStringAsFixed(2)}',
-                style:
-                    Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onTertiary),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onTertiary,
+                    ),
               ),
             ),
           ),
