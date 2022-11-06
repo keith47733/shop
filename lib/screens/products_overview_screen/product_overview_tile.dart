@@ -6,24 +6,9 @@ import '../../../providers/product_item.dart';
 import '../../../styles/layout.dart';
 import '../product_detail_screen/product_detail_screen.dart';
 
-// Interestingly, we don't need a Stateful widget when using Provider/Consumer. They will rebuild only their children in a Stateless widget!
-
 class ProductOverviewTile extends StatelessWidget {
-  // final String id;
-  // final String title;
-  // final double price;
-  // final String imageUrl;
-
-  // You either have to make the variables above nullable. eg, final String? id.
-  // // ProductOverviewTile(this.id, this.title, this.price, this.imageUrl);
-  // Or make them required variables to ensure they can't be null by putting them {} with the 'required' keyword. Note the {} also turns them into named arguments when the widget/class is instantiated.
-  // // ProductOverviewTile({required this.id, ...});
-
   @override
   Widget build(BuildContext context) {
-    // This basically instantiates a Product class object. The default is listen: true,
-    // // final currentProduct = Provider.of<Product>(context);
-    // Another approach is to use the Provider to only fetch data (listen: false) and wrap individual widgets with Consumer<Product> for rebuilds. The major advantage is ONLY the widget(s) wrapped in Consumer listener will rebuild, not the entire widget build().
     final product = Provider.of<ProductItem>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
 
@@ -31,12 +16,10 @@ class ProductOverviewTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(Layout.RADIUS),
       child: GestureDetector(
         onTap: () {
-          // arguments: allows data to be passed from one screen to another through the Navigator where requried (most data will be accessed through Providers though).
           Navigator.of(context).pushNamed(
             ProductDetailScreen.routeName,
             arguments: product.productItemId,
           );
-          // Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductDetailScreen(gridTileProduct)));
         },
         child: GridTile(
           header: GridTileHeader(context, product),
@@ -79,10 +62,8 @@ class ProductOverviewTile extends StatelessWidget {
     return GridTileBar(
       backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
       leading: Consumer<ProductItem>(
-        // Interesting...you need to use a different variable than the "context" context required for Theme below. Use a different "ctx" in the Consumer builder. You can specify a child in the builder and a child: argument for aspects of the widget that don't need to be rebuilt. (If a static child is not required, you can use '_')
         builder: (ctx, currentProduct, _) => IconButton(
           onPressed: () {
-            // This calls the Prodcut class toggleFavorite() method. The method  notifies listeners when it is done. Any listeners/consumers will then rebuild their children.
             currentProduct.toggleFavourite();
           },
           icon: currentProduct.isFavourite

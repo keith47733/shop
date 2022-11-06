@@ -10,20 +10,7 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extract argument(s) from the screen that pushed this screen with the Navigator using ModalRoute. In this case, only the productId is passed and extracted.
     final productId = ModalRoute.of(context)!.settings.arguments as String;
-
-    // Set up the Products class listener:
-    // // final productProvider = Provider.of<Products>(context);
-    // It is better to hide all getter logic in the provider class.
-    // // final detailProduct = productProvider.items.firstWhere((product) => product.id == productId);
-    // Now, based on the productId, we can use a provider method to find a matching product in the Product class.
-    // // final detailProduct = productProvider.findProductbyId(productId);
-
-    // Can combine setup and get in one statement:
-    // // final detailProduct = Provider.of<Products>(context).findProductbyId(productId);
-
-    // Even better, we only want to fetch a single Product (whereas in the OverviewScreen we want to rebuild the product GridView if a product is added/deleted). Assuming a product won't change once this widget is built, it wouldn't matter if a product were added, so we only need to fetch not really listen. So this widget won't rebuild when provider triggers notifyListeners() when listen: is false.
     final detailedProduct = Provider.of<Products>(context, listen: false).findProductbyId(productId);
 
     return Scaffold(
@@ -40,10 +27,11 @@ class ProductDetailScreen extends StatelessWidget {
           children: <Widget>[
             Text(
               detailedProduct.title,
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onBackground),
+              style:
+                  Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
             SizedBox(height: Layout.SPACING),
-						Container(
+            Container(
               height: MediaQuery.of(context).size.width,
               width: double.infinity,
               child: Image.network(

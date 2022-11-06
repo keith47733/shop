@@ -3,35 +3,27 @@ import 'package:provider/provider.dart';
 
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
+import '../../widgets/app_bar.dart';
 import '../../widgets/app_drawer.dart';
-import '../products_overview_screen/products_overview_screen.dart';
 import 'order_item_card.dart';
 
 class OrdersScreen extends StatelessWidget {
-  // routeName needs to be static so that we can access the variable without instantiating the class/widget screen.
   static const routeName = '/orders_screen';
 
   @override
   Widget build(BuildContext context) {
     final orders = Provider.of<Orders>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Orders'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: Layout.SPACING / 2),
-            child: IconButton(
-              onPressed: () {
-                Layout.showFavourites = false;
-                Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
-              },
-              icon: Icon(Icons.shop),
+      appBar: CustomAppBar(context, 'Orders'),
+      drawer: AppDrawer('Orders'),
+      body: orders.isOrders()
+          ? OrdersList(orders)
+          : Center(
+              child: Text(
+                'You haven\'t placed any orders yet.',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
-          ),
-        ],
-      ),
-      drawer: AppDrawer(),
-      body: OrdersList(orders),
     );
   }
 
@@ -47,7 +39,6 @@ class OrdersScreen extends StatelessWidget {
           child: ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            // Don't need () when calling a getter.
             itemCount: orders.order.length,
             itemBuilder: ((context, index) {
               return OrderItemCard(

@@ -1,11 +1,14 @@
-import 'package:Shop/screens/products_overview_screen/products_overview_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
+import '../screens/products_overview_screen/products_overview_screen.dart';
 import '../styles/layout.dart';
 
 class AppDrawer extends StatelessWidget {
+  String currentScreen;
+  AppDrawer(this.currentScreen);
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -63,7 +66,7 @@ class AppDrawer extends StatelessWidget {
     required String title,
   }) {
     return ListTile(
-      onTap: () => handler(context),
+      onTap: currentScreen != title ? () => handler(context) : () {},
       leading: Icon(
         icon,
         size: Layout.ICONSIZE * 0.8,
@@ -71,9 +74,13 @@ class AppDrawer extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+        style: currentScreen == title
+            ? Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                )
+            : Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
       ),
     );
   }

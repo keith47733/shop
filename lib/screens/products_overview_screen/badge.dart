@@ -7,7 +7,6 @@ class Badge extends StatelessWidget {
   final String value;
 
   const Badge({
-    // Key? key,
     required this.child,
     required this.value,
   });

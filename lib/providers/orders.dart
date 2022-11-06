@@ -10,11 +10,18 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  bool isOrders() {
+    if (_orders.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   void addOrder({
     required List<CartItem> cartProducts,
     required double total,
   }) {
-    // By default, add() will add to the end of the list. Specifying an index of 0 means new orders will be added to the beginning of the list.
     _orders.insert(
       0,
       OrderItem(
