@@ -24,56 +24,52 @@ class _OrderItemCardState extends State<OrderItemCard> {
       padding: const EdgeInsets.only(
         bottom: Layout.SPACING,
       ),
-      child: Card(
-        color: Theme.of(context).colorScheme.secondaryContainer,
-        child: Column(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(Layout.RADIUS),
+        child: ExpansionTile(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          collapsedBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          leading: CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Text(
+              '${(widget.index + 1)}',
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+          ),
+          title: Text(
+            '\$${widget.orderItem.amount.toStringAsFixed(2)}',
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+          ),
+          subtitle: Text(
+            DateFormat('MMM d\, yyyy').format(widget.orderItem.orderDate),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+          ),
           children: [
-            ExpansionTile(
-              backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-              collapsedBackgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-              leading: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                child: Text(
-                  '${(widget.index + 1)}',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(
+                top: Layout.SPACING,
+                left: Layout.SPACING,
+                right: Layout.SPACING,
               ),
-              title: Text(
-                '\$${widget.orderItem.amount.toStringAsFixed(2)}',
-                style: TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
+              child: ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: widget.orderItem.products
+                    .map(
+                      (product) => Padding(
+                        padding: const EdgeInsets.only(bottom: Layout.SPACING),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(product.title, style: Theme.of(context).textTheme.titleMedium),
+                            Text('${product.quantity} x \$${product.price}',
+                                style: Theme.of(context).textTheme.titleSmall),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
-              subtitle: Text(
-                DateFormat('MMM d\, yyyy').format(widget.orderItem.orderDate),
-                style: TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: Layout.SPACING,
-                    left: Layout.SPACING,
-                    right: Layout.SPACING,
-                  ),
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: widget.orderItem.products
-                        .map(
-                          (product) => Padding(
-                            padding: const EdgeInsets.only(bottom: Layout.SPACING),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(product.title, style: Theme.of(context).textTheme.titleMedium),
-                                Text('${product.quantity} x \$${product.price}',
-                                    style: Theme.of(context).textTheme.titleSmall),
-                              ],
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ],
             ),
           ],
         ),

@@ -5,7 +5,10 @@ import '../styles/layout.dart';
 
 PreferredSizeWidget CustomAppBar(context, title) {
   return AppBar(
-    title: Text(title),
+    title: Text(
+      title,
+      style: TextStyle(fontFamily: 'Merriweather'),
+    ),
     actions: [
       Padding(
         padding: const EdgeInsets.only(right: Layout.SPACING / 2),

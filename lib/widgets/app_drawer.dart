@@ -15,7 +15,10 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: Text('Bitches Be Shopping'),
+            title: Text(
+              'Menu',
+              style: TextStyle(fontFamily: 'Merriweather'),
+            ),
             automaticallyImplyLeading: false,
           ),
           Padding(
@@ -76,10 +79,10 @@ class AppDrawer extends StatelessWidget {
         title,
         style: currentScreen == title
             ? Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
                 )
             : Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
       ),
     );

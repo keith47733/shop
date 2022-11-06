@@ -65,9 +65,9 @@ flutter:
   # example:
 
   fonts:
-    - family: Anton
+    - family: Merriweather
       fonts:
-        - asset: assets/fonts/Anton-Regular.ttf   
+        - asset: assets/fonts/Merriweather-Regular.ttf   
     - family: Lato
       fonts:
         - asset: assets/fonts/Lato-Regular.ttf

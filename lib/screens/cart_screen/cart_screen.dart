@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/cart.dart';
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
-import '../../widgets/app_bar.dart';
+import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_drawer.dart';
 import '../orders_screen/orders_screen.dart';
 import 'cart_item_card.dart';
@@ -32,26 +32,32 @@ class CartScreen extends StatelessWidget {
   }
 
   Widget CartTotalCard(context, currentCart) {
-    return Card(
-      elevation: Layout.ELEVATION,
-      margin: const EdgeInsets.symmetric(vertical: Layout.SPACING / 2),
-      color: Theme.of(context).colorScheme.secondaryContainer,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Layout.RADIUS),
+        color: Theme.of(context).colorScheme.primaryContainer,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(Layout.SPACING),
+        padding: const EdgeInsets.symmetric(
+          vertical: Layout.SPACING / 2,
+          horizontal: Layout.SPACING,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
               'Total:',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
             ),
             Spacer(),
             Chip(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               label: Text(
                 '\$${currentCart.cartTotal.toStringAsFixed(2)}',
                 style:
-                    Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                    Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onPrimary),
               ),
             ),
             SizedBox(width: Layout.SPACING),
@@ -69,7 +75,7 @@ class CartScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       'Place\nOrder',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.tertiary,
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -78,7 +84,7 @@ class CartScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     'Your cart is\nEmpty',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.tertiary,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.bold,
                         ),
                   ),

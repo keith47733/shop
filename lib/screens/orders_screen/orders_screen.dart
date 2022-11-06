@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
-import '../../widgets/app_bar.dart';
+import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_drawer.dart';
 import 'order_item_card.dart';
 
@@ -18,10 +18,16 @@ class OrdersScreen extends StatelessWidget {
       drawer: AppDrawer('Orders'),
       body: orders.isOrders()
           ? OrdersList(orders)
-          : Center(
-              child: Text(
-                'You haven\'t placed any orders yet.',
-                style: Theme.of(context).textTheme.titleLarge,
+          : Padding(
+              padding: const EdgeInsets.all(Layout.SPACING * 2),
+              child: Center(
+                child: Text(
+                  'You haven\'t placed any orders yet.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                ),
               ),
             ),
     );
@@ -29,24 +35,26 @@ class OrdersScreen extends StatelessWidget {
 
   Widget OrdersList(orders) {
     return SingleChildScrollView(
-      child: Container(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: Layout.SPACING,
-            left: Layout.SPACING,
-            right: Layout.SPACING,
-          ),
-          child: ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: orders.order.length,
-            itemBuilder: ((context, index) {
-              return OrderItemCard(
-                index: index,
-                orderItem: orders.order[index],
-              );
-            }),
-          ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: Layout.SPACING,
+          left: Layout.SPACING,
+          right: Layout.SPACING,
+        ),
+        child: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: orders.order.length,
+              itemBuilder: ((context, index) {
+                return OrderItemCard(
+                  index: index,
+                  orderItem: orders.order[index],
+                );
+              }),
+            ),
+          ],
         ),
       ),
     );

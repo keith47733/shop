@@ -23,58 +23,57 @@ class CartItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final itemTileMargins = const EdgeInsets.only(
       top: Layout.SPACING / 2,
-      left: Layout.SPACING / 3,
-      right: Layout.SPACING / 3,
+      left: Layout.SPACING / 2,
+      right: Layout.SPACING / 2,
+      bottom: 0,
     );
 
-    return Dismissible(
-      key: ValueKey(cartItemId),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        Provider.of<Cart>(context, listen: false).removeCartItem(productId);
-      },
-      background: Container(
-        margin: itemTileMargins,
-        padding: const EdgeInsets.only(right: Layout.SPACING * 1.5),
-        alignment: Alignment.centerRight,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(Layout.ELEVATION),
-          color: Theme.of(context).colorScheme.errorContainer,
+    return Padding(
+      padding: itemTileMargins,
+      child: Dismissible(
+        key: ValueKey(cartItemId),
+        direction: DismissDirection.endToStart,
+        onDismissed: (direction) {
+          Provider.of<Cart>(context, listen: false).removeCartItem(productId);
+        },
+        background: Container(
+          padding: const EdgeInsets.only(right: Layout.SPACING * 1.5),
+          alignment: Alignment.centerRight,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Layout.RADIUS),
+            color: Theme.of(context).colorScheme.errorContainer,
+          ),
+          child: Icon(
+            Icons.delete,
+            size: Layout.ICONSIZE,
+            color: Theme.of(context).colorScheme.onErrorContainer,
+          ),
         ),
-        child: Icon(
-          Icons.delete,
-          size: Layout.ICONSIZE,
-          color: Theme.of(context).colorScheme.onErrorContainer,
-        ),
-      ),
-      child: Card(
-        elevation: Layout.ELEVATION,
-        margin: itemTileMargins,
-        color: Theme.of(context).colorScheme.tertiaryContainer,
-        child: Padding(
-          padding: const EdgeInsets.all(Layout.SPACING / 2),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-              child: Text(
-                '$quantity',
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-              ),
+        child: ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Layout.RADIUS),
+          ),
+          tileColor: Theme.of(context).colorScheme.secondaryContainer,
+          leading: CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            child: Text(
+              '$quantity',
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
             ),
-            title: Text(title),
-            subtitle: Text(
-              'x \$${(price)}',
-            ),
-            trailing: Chip(
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-              label: Text(
-                '\$${(quantity * price).toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-              ),
+          ),
+          title: Text(title),
+          subtitle: Text(
+            'x \$${(price)}',
+          ),
+          trailing: Chip(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            label: Text(
+              '\$${(quantity * price).toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
             ),
           ),
         ),

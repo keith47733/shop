@@ -81,6 +81,7 @@ class ProductOverviewTile extends StatelessWidget {
         product.title,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
               color: Theme.of(context).colorScheme.onSecondary,
+              fontFamily: 'Merriweather',
             ),
         textAlign: TextAlign.center,
       ),

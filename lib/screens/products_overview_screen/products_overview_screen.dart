@@ -33,20 +33,28 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   PreferredSizeWidget MainAppBar(showFavourites) {
     return AppBar(
-      title: showFavourites ? Text('Favourite Products') : Text('All Products'),
+      title: showFavourites
+          ? Text(
+              'Favourite Products',
+              style: TextStyle(fontFamily: 'Merriweather'),
+            )
+          : Text(
+              'Bitches Be Shopping',
+              style: TextStyle(fontFamily: 'Merriweather'),
+            ),
       actions: [
-        Consumer<Cart>(
-          builder: ((_, cart, badgeChild) => Badge(
-                child: badgeChild!,
-                value: cart.numberOfCartItems.toString(),
-              )),
-          child: Padding(
-            padding: const EdgeInsets.only(right: Layout.SPACING / 2),
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.routeName);
-              },
-              icon: Icon(Icons.shopping_cart),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(CartScreen.routeName);
+          },
+          child: Consumer<Cart>(
+            builder: ((_, cart, badgeChild) => Badge(
+                  child: badgeChild!,
+                  value: cart.numberOfCartItems.toString(),
+                )),
+            child: Padding(
+              padding: const EdgeInsets.only(right: Layout.SPACING),
+              child: Icon(Icons.shopping_cart),
             ),
           ),
         ),
@@ -59,10 +67,14 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         _showFavourites ? Provider.of<Products>(context).favouriteProducts : Provider.of<Products>(context).allProducts;
 
     return products.isEmpty
-        ? Center(
-            child: Text(
-              'You haven\'t picked any favourites yet.',
-              style: Theme.of(context).textTheme.titleLarge,
+        ? Padding(
+            padding: const EdgeInsets.all(Layout.SPACING * 2),
+            child: Center(
+              child: Text(
+                'You haven\'t picked any favourites yet.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
           )
         : GridView.builder(

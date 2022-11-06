@@ -11,7 +11,8 @@ import 'screens/product_detail_screen/product_detail_screen.dart';
 import 'screens/products_overview_screen/products_overview_screen.dart';
 import 'styles/app_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
