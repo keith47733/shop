@@ -6,7 +6,7 @@ import '../../../providers/product_item.dart';
 import '../../../styles/layout.dart';
 import '../product_detail_screen/product_detail_screen.dart';
 
-class ProductOverviewTile extends StatelessWidget {
+class ProductTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<ProductItem>(context, listen: false);
@@ -62,11 +62,11 @@ class ProductOverviewTile extends StatelessWidget {
     return GridTileBar(
       backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
       leading: Consumer<ProductItem>(
-        builder: (ctx, currentProduct, _) => IconButton(
+        builder: (ctx, product, _) => IconButton(
           onPressed: () {
-            currentProduct.toggleFavourite();
+            product.toggleFavourite();
           },
-          icon: currentProduct.isFavourite
+          icon: product.isFavourite
               ? Icon(
                   Icons.favorite,
                   color: Theme.of(context).colorScheme.onSecondary,
@@ -86,11 +86,26 @@ class ProductOverviewTile extends StatelessWidget {
         textAlign: TextAlign.center,
       ),
       trailing: IconButton(
-        onPressed: () => cart.addCartItem(
-          productId: product.productItemId,
-          title: product.title,
-          price: product.price,
-        ),
+        onPressed: () {
+          cart.addCartItem(product.productItemId, product.title, product.price);
+          // Going to access static method .of() in Scaffold widget. .of() almost always takes context. This establishes communication with the nearest Scaffold widget (in main.dart). Remember Scaffold holds and controls the entire screen.
+					ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Successfully added item to cart.',
+              ),
+              duration: Duration(seconds: 2),
+              action: SnackBarAction(
+                onPressed: () {
+                  cart.removeItem(product.productItemId);
+                },
+								textColor: Theme.of(context).colorScheme.inversePrimary,
+                label: 'UNDO',
+              ),
+            ),
+          );
+        },
         icon: Icon(
           Icons.shopping_cart,
           color: Theme.of(context).colorScheme.onSecondary,

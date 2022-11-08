@@ -5,7 +5,7 @@ import '../../providers/orders.dart';
 import '../../styles/layout.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_drawer.dart';
-import 'order_item_card.dart';
+import 'order_item_tile.dart';
 
 class OrdersScreen extends StatelessWidget {
   static const routeName = '/orders_screen';
@@ -19,7 +19,7 @@ class OrdersScreen extends StatelessWidget {
       body: orders.isOrders()
           ? OrdersList(orders)
           : Padding(
-              padding: const EdgeInsets.all(Layout.SPACING * 2),
+              padding: const EdgeInsets.all(Layout.SPACING * 4),
               child: Center(
                 child: Text(
                   'You haven\'t placed any orders yet.',
@@ -48,7 +48,7 @@ class OrdersScreen extends StatelessWidget {
               physics: NeverScrollableScrollPhysics(),
               itemCount: orders.order.length,
               itemBuilder: ((context, index) {
-                return OrderItemCard(
+                return OrderItemTile(
                   index: index,
                   orderItem: orders.order[index],
                 );

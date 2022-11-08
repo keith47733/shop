@@ -1,12 +1,13 @@
+import 'package:Shop/screens/user_products_screen/user_products_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
-import '../screens/products_overview_screen/products_overview_screen.dart';
+import '../screens/products_screen/products_screen.dart';
 import '../styles/layout.dart';
 
 class AppDrawer extends StatelessWidget {
-  String currentScreen;
+  final String currentScreen;
   AppDrawer(this.currentScreen);
 
   @override
@@ -16,7 +17,7 @@ class AppDrawer extends StatelessWidget {
         children: [
           AppBar(
             title: Text(
-              'Menu',
+              'Bitches Be Shopping',
               style: TextStyle(fontFamily: 'Merriweather'),
             ),
             automaticallyImplyLeading: false,
@@ -41,6 +42,12 @@ class AppDrawer extends StatelessWidget {
                   handler: favouriteProductsHandler,
                   icon: Icons.favorite_outline,
                   title: 'Favourite Products',
+                ),
+                MenuOption(
+                  context: context,
+                  handler: yourProductsHandler,
+                  icon: Icons.add_shopping_cart,
+                  title: 'Your Products',
                 ),
                 MenuOption(
                   context: context,
@@ -88,14 +95,18 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  allProductsHandler(context) {
+  void allProductsHandler(context) {
     Layout.showFavourites = false;
-    Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
   }
 
   void favouriteProductsHandler(context) {
     Layout.showFavourites = true;
-    Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
+    Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
+  }
+
+  void yourProductsHandler(context) {
+    Navigator.of(context).pushReplacementNamed(UserProductsScreen.routeName);
   }
 
   void cartHandler(context) {

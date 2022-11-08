@@ -7,7 +7,7 @@ import '../../styles/layout.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_drawer.dart';
 import '../orders_screen/orders_screen.dart';
-import 'cart_item_card.dart';
+import 'cart_item_tile.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart_screen';
@@ -39,7 +39,7 @@ class CartScreen extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          vertical: Layout.SPACING / 2,
+          vertical: Layout.SPACING / 1.5,
           horizontal: Layout.SPACING,
         ),
         child: Row(
@@ -98,7 +98,7 @@ class CartScreen extends StatelessWidget {
     return Expanded(
       child: ListView.builder(
         itemCount: currentCart.cartItems.length,
-        itemBuilder: ((ctx, index) => CartItemCard(
+        itemBuilder: ((ctx, index) => CartItemTile(
               cartItemId: currentCart.cartItems.values.toList()[index].cartItemId,
               productId: currentCart.cartItems.keys.toList()[index],
               title: currentCart.cartItems.values.toList()[index].title,

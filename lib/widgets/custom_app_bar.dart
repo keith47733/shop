@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../screens/products_overview_screen/products_overview_screen.dart';
+import '../screens/products_screen/products_screen.dart';
 import '../styles/layout.dart';
 
 PreferredSizeWidget CustomAppBar(context, title) {
@@ -15,7 +15,7 @@ PreferredSizeWidget CustomAppBar(context, title) {
         child: IconButton(
           onPressed: () {
             Layout.showFavourites = false;
-            Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
+            Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
           },
           icon: Icon(Icons.shop),
         ),

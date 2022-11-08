@@ -7,21 +7,21 @@ import '../../styles/layout.dart';
 import '../../widgets/app_drawer.dart';
 import '../cart_screen/cart_screen.dart';
 import 'badge.dart';
-import 'product_overview_tile.dart';
+import 'product_tile.dart';
 
 enum Filter {
   showFavourites,
   showAll,
 }
 
-class ProductsOverviewScreen extends StatefulWidget {
+class ProductsScreen extends StatefulWidget {
   static const routeName = '/';
 
   @override
-  State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
+  State<ProductsScreen> createState() => _ProductsScreenState();
 }
 
-class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,15 +33,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   PreferredSizeWidget MainAppBar(showFavourites) {
     return AppBar(
-      title: showFavourites
-          ? Text(
-              'Favourite Products',
-              style: TextStyle(fontFamily: 'Merriweather'),
-            )
-          : Text(
-              'Bitches Be Shopping',
-              style: TextStyle(fontFamily: 'Merriweather'),
-            ),
+      title: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          showFavourites ? 'Favourite Products' : 'Bitches Be Shopping',
+          style: TextStyle(fontFamily: 'Merriweather'),
+        ),
+      ),
       actions: [
         GestureDetector(
           onTap: () {
@@ -68,7 +66,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
     return products.isEmpty
         ? Padding(
-            padding: const EdgeInsets.all(Layout.SPACING * 2),
+            padding: const EdgeInsets.all(Layout.SPACING * 4),
             child: Center(
               child: Text(
                 'You haven\'t picked any favourites yet.',
@@ -89,7 +87,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             itemBuilder: (BuildContext context, int index) {
               return ChangeNotifierProvider.value(
                 value: products[index],
-                child: ProductOverviewTile(),
+                child: ProductTile(),
               );
             },
           );

@@ -30,7 +30,7 @@ final MOCK_INVENTORY = [
     price: 49.99,
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
   ),
-	ProductItem(
+  ProductItem(
     productItemId: 'p5',
     title: 'Red Shirt II',
     description: 'A red shirt - it is pretty red!',

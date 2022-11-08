@@ -1,4 +1,5 @@
 class Layout {
+	static const BORDER_WIDTH = 2.0;
   static const ELEVATION = 5.0;
   static const ICONSIZE = 30.0;
   static const RADIUS = 15.0;

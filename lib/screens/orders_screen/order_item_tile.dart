@@ -4,20 +4,20 @@ import 'package:intl/intl.dart';
 import '../../providers/order_item.dart';
 import '../../styles/layout.dart';
 
-class OrderItemCard extends StatefulWidget {
+class OrderItemTile extends StatefulWidget {
   final int index;
   final OrderItem orderItem;
 
-  OrderItemCard({
+  OrderItemTile({
     required this.index,
     required this.orderItem,
   });
 
   @override
-  State<OrderItemCard> createState() => _OrderItemCardState();
+  State<OrderItemTile> createState() => _OrderItemTileState();
 }
 
-class _OrderItemCardState extends State<OrderItemCard> {
+class _OrderItemTileState extends State<OrderItemTile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
