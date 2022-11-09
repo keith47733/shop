@@ -31,7 +31,7 @@ class UserProductsScreen extends StatelessWidget {
           padding: const EdgeInsets.only(right: Layout.SPACING / 2),
           child: IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(EditProductScreen.routeName);
+              Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: 'add');
             },
             icon: Icon(Icons.note_add),
           ),
@@ -52,6 +52,7 @@ class UserProductsScreen extends StatelessWidget {
         itemCount: userProducts.allProducts.length,
         itemBuilder: (_, index) {
           return UserProductTile(
+						userProducts.allProducts[index].productItemId,
             userProducts.allProducts[index].title,
             userProducts.allProducts[index].imageUrl,
           );

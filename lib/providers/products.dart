@@ -14,11 +14,34 @@ class Products with ChangeNotifier {
     return _products.where((indexProduct) => indexProduct.isFavourite).toList();
   }
 
-  ProductItem findProductbyId(String productId) {
-    return _products.firstWhere((product) => product.productItemId == productId);
+  ProductItem findProductById(String productItemId) {
+    return _products.firstWhere((product) => product.productItemId == productItemId);
   }
 
-  void addProduct() {
+  void addProduct(ProductItem product) {
+    final newProduct = ProductItem(
+      productItemId: DateTime.now().toString(),
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      isFavourite: false,
+    );
+    // _products.add(newProduct);
+    _products.insert(0, newProduct);
     notifyListeners();
   }
+
+  void updateProduct(String editedProductItemId, ProductItem editedProduct) {
+    final productIndex = _products.indexWhere((product) => product.productItemId == editedProductItemId);
+    if (productIndex >= 0) {
+      _products[productIndex] = editedProduct;
+      notifyListeners();
+    }
+  }
+
+	void deleteProduct (String deleteProductItemId) {
+		_products.removeWhere((product) => product.productItemId == deleteProductItemId);
+		notifyListeners();
+	}
 }

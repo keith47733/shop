@@ -11,7 +11,7 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productId = ModalRoute.of(context)!.settings.arguments as String;
-    final detailedProduct = Provider.of<Products>(context, listen: false).findProductbyId(productId);
+    final detailedProduct = Provider.of<Products>(context, listen: false).findProductById(productId);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,6 +51,8 @@ class ProductDetailScreen extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(Layout.RADIUS),
                   child: Container(
+										height: MediaQuery.of(context).size.width * 0.80,
+										width: MediaQuery.of(context).size.width * 0.80,
                     child: Image.network(
                       detailedProduct.imageUrl,
                       fit: BoxFit.cover,

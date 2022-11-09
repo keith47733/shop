@@ -1,10 +1,14 @@
-import 'package:Shop/styles/layout.dart';
+import '../../providers/products.dart';
+import 'edit_product_screen.dart';
+import '../../styles/layout.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserProductTile extends StatelessWidget {
+  final String productItemId;
   final String title;
   final String imageUrl;
-  UserProductTile(this.title, this.imageUrl);
+  UserProductTile(this.productItemId, this.title, this.imageUrl);
 
   @override
   Widget build(BuildContext context) {
@@ -29,18 +33,20 @@ class UserProductTile extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
         ),
-				// Note that Row will take all space available in the ListTile and trailing: does not constrain its size.
+        // Note that Row will take all space available in the ListTile and trailing: does not constrain its size.
         trailing: FittedBox(
           child: Row(
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: productItemId);
+                },
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                 icon: Icon(Icons.edit),
               ),
               IconButton(
-                onPressed: () {},
-								color: Theme.of(context).colorScheme.onPrimaryContainer,
+                onPressed: () => _deleteProduct(context, productItemId),
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
                 icon: Icon(Icons.delete),
               )
             ],
@@ -48,5 +54,52 @@ class UserProductTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _deleteProduct(context, productItemId) async {
+    bool _deleteProduct = false;
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text('Remove Product'),
+        content: Text('Are you sure you want to remove this product?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _deleteProduct = false;
+            },
+            child: Text(
+              'No',
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _deleteProduct = true;
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    if (_deleteProduct) {
+      Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Product successfully deleted',
+          ),
+          duration: Duration(seconds: 2),
+          // action: SnackBarAction(
+          //   onPressed: () {},
+          //   textColor: Theme.of(context).colorScheme.inversePrimary,
+          //   label: 'UNDO',
+          // ),
+        ),
+      );
+    }
   }
 }

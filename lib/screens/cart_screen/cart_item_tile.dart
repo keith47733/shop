@@ -6,14 +6,14 @@ import '../../../styles/layout.dart';
 
 class CartItemTile extends StatelessWidget {
   final String cartItemId;
-  final String productId;
+  final String productItemId;
   final String title;
   final double price;
   final int quantity;
 
   CartItemTile({
     required this.cartItemId,
-    required this.productId,
+    required this.productItemId,
     required this.title,
     required this.price,
     required this.quantity,
@@ -43,8 +43,8 @@ class CartItemTile extends StatelessWidget {
             barrierDismissible: false,
             // All builders within a widgets build() method returns a different context, often referred to as 'ctx'. You can use this to return a number of different kinds of dialogs.
             builder: (ctx) => AlertDialog(
-              title: Text('Remove Item'),
-              content: Text('Are you sure you want to remove the item from your cart?'),
+              title: Text('Remove Product'),
+              content: Text('Are you sure you want to remove this product from your cart?'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -66,7 +66,21 @@ class CartItemTile extends StatelessWidget {
           );
         },
         onDismissed: (direction) {
-          Provider.of<Cart>(context, listen: false).removeProduct(productId);
+          Provider.of<Cart>(context, listen: false).removeProduct(productItemId);
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Product removed from cart',
+              ),
+              duration: Duration(seconds: 2),
+              // action: SnackBarAction(
+              //   onPressed: () {},
+              //   textColor: Theme.of(context).colorScheme.inversePrimary,
+              //   label: 'UNDO',
+              // ),
+            ),
+          );
         },
         background: Container(
           padding: const EdgeInsets.only(right: Layout.SPACING * 1.5),
