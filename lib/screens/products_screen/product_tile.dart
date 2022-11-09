@@ -1,3 +1,4 @@
+import 'package:Shop/widgets/my_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -65,6 +66,9 @@ class ProductTile extends StatelessWidget {
         builder: (ctx, product, _) => IconButton(
           onPressed: () {
             product.toggleFavourite();
+						product.isFavourite
+						? MySnackBar(context, '${product.title} added to favourites')
+						: MySnackBar(context, '${product.title} removed from favourites');
           },
           icon: product.isFavourite
               ? Icon(
@@ -88,22 +92,7 @@ class ProductTile extends StatelessWidget {
       trailing: IconButton(
         onPressed: () {
           cart.addCartItem(product.productItemId, product.title, product.price);
-					ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Item added to cart',
-              ),
-              duration: Duration(seconds: 2),
-              action: SnackBarAction(
-                onPressed: () {
-                  cart.removeItem(product.productItemId);
-                },
-								textColor: Theme.of(context).colorScheme.inversePrimary,
-                label: 'UNDO',
-              ),
-            ),
-          );
+					MySnackBar(context, '${product.title} added to cart');
         },
         icon: Icon(
           Icons.shopping_cart,

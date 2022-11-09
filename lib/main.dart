@@ -1,5 +1,3 @@
-import 'package:Shop/screens/user_products_screen/edit_product_screen.dart';
-import 'package:Shop/screens/user_products_screen/user_products_screen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +9,8 @@ import 'screens/cart_screen/cart_screen.dart';
 import 'screens/orders_screen/orders_screen.dart';
 import 'screens/product_detail_screen/product_detail_screen.dart';
 import 'screens/products_screen/products_screen.dart';
+import 'screens/user_products_screen/edit_product_screen.dart';
+import 'screens/user_products_screen/user_products_screen.dart';
 import 'styles/app_theme.dart';
 
 void main() async {

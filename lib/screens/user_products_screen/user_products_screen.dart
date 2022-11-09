@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../providers/products.dart';
 import '../../styles/layout.dart';
-import '../../widgets/app_drawer.dart';
+import '../../widgets/my_app_bar.dart';
+import '../../widgets/my_app_drawer.dart';
 import 'edit_product_screen.dart';
 import 'user_product_tile.dart';
 
@@ -15,30 +16,14 @@ class UserProductsScreen extends StatelessWidget {
     final _userProducts = Provider.of<Products>(context);
 
     return Scaffold(
-      appBar: CustomAppBar(context, 'Your Products'),
-      drawer: AppDrawer('Your Products'),
+      appBar: MyAppBar('Your Products', Icon(Icons.note_add), () => _appBarHandler(context)),
+      drawer: MyAppDrawer('Your Products'),
       body: BuildProductList(_userProducts),
     );
   }
 
-  PreferredSizeWidget CustomAppBar(context, title) {
-    return AppBar(
-      title: Text(
-        title,
-        style: TextStyle(fontFamily: 'Merriweather'),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: Layout.SPACING / 2),
-          child: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: 'add');
-            },
-            icon: Icon(Icons.note_add),
-          ),
-        ),
-      ],
-    );
+  void _appBarHandler(context) {
+    Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: 'add');
   }
 
   Widget BuildProductList(userProducts) {

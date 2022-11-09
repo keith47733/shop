@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
-import '../../widgets/app_drawer.dart';
-import '../../widgets/custom_app_bar.dart';
+import '../../widgets/my_app_bar.dart';
+import '../../widgets/my_app_drawer.dart';
+import '../products_screen/products_screen.dart';
 import 'order_item_tile.dart';
 
 class OrdersScreen extends StatelessWidget {
@@ -14,8 +15,8 @@ class OrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final orders = Provider.of<Orders>(context);
     return Scaffold(
-      appBar: CustomAppBar(context, 'Orders'),
-      drawer: AppDrawer('Orders'),
+      appBar: MyAppBar('Orders', Icon(Icons.shop), () => _appBarHandler(context)),
+      drawer: MyAppDrawer('Orders'),
       body: orders.isOrders()
           ? OrdersList(orders)
           : Padding(
@@ -31,6 +32,10 @@ class OrdersScreen extends StatelessWidget {
               ),
             ),
     );
+  }
+
+  void _appBarHandler(context) {
+    Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
   }
 
   Widget OrdersList(orders) {

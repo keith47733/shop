@@ -1,3 +1,4 @@
+import 'package:Shop/widgets/my_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,12 +14,13 @@ class ProductDetailScreen extends StatelessWidget {
     final detailedProduct = Provider.of<Products>(context, listen: false).findProductById(productId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Product Detail',
-          style: TextStyle(fontFamily: 'Merriweather'),
-        ),
-      ),
+      appBar: MyAppBar('Product Detail', null, null),
+      // AppBar(
+      //   title: Text(
+      //     'Product Detail',
+      //     style: TextStyle(fontFamily: 'Merriweather'),
+      //   ),
+      // ),
       body: ProductDetails(context, detailedProduct),
     );
   }
@@ -50,8 +52,8 @@ class ProductDetailScreen extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(Layout.RADIUS),
                   child: Container(
-										height: MediaQuery.of(context).size.width * 0.80,
-										width: MediaQuery.of(context).size.width * 0.80,
+                    height: MediaQuery.of(context).size.width * 0.80,
+                    width: MediaQuery.of(context).size.width * 0.80,
                     child: Image.network(
                       detailedProduct.imageUrl,
                       fit: BoxFit.cover,

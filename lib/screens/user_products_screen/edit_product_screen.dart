@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../providers/product_item.dart';
 import '../../providers/products.dart';
 import '../../styles/layout.dart';
+import '../../widgets/my_app_bar.dart';
+import '../../widgets/my_snack_bar.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit_product_screen';
@@ -94,8 +96,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     if (_editedProduct.productItemId == 'add') {
       Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+      MySnackBar(context, '${_editedProduct.title} added to Your Products');
     } else {
       Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.productItemId, _editedProduct);
+			MySnackBar(context, 'Updated ${_editedProduct.title}');
     }
     Navigator.of(context).pop();
   }
@@ -121,26 +125,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
 
     return Scaffold(
-      appBar: CustomAppBar(context, _editedProduct.productItemId),
+      appBar: _editedProduct.productItemId == 'add'
+          ? MyAppBar('Add Product', Icon(Icons.save), _saveForm)
+          : MyAppBar('Edit Product', Icon(Icons.save), _saveForm),
       body: BuildInputForm(context, formFieldDecoration),
-    );
-  }
-
-  PreferredSizeWidget CustomAppBar(context, productItemId) {
-    return AppBar(
-      title: Text(
-        (productItemId == 'add') ? 'Add Product' : 'Edit Product',
-        style: TextStyle(fontFamily: 'Merriweather'),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: Layout.SPACING / 2),
-          child: IconButton(
-            onPressed: _saveForm,
-            icon: Icon(Icons.save),
-          ),
-        ),
-      ],
     );
   }
 

@@ -6,9 +6,9 @@ import '../screens/products_screen/products_screen.dart';
 import '../screens/user_products_screen/user_products_screen.dart';
 import '../styles/layout.dart';
 
-class AppDrawer extends StatelessWidget {
+class MyAppDrawer extends StatelessWidget {
   final String currentScreen;
-  AppDrawer(this.currentScreen);
+  MyAppDrawer(this.currentScreen);
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/cart.dart';
 import '../../providers/products.dart';
 import '../../styles/layout.dart';
-import '../../widgets/app_drawer.dart';
+import '../../widgets/my_app_drawer.dart';
 import '../cart_screen/cart_screen.dart';
 import 'badge.dart';
 import 'product_tile.dart';
@@ -26,7 +26,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(Layout.showFavourites),
-      drawer: AppDrawer(Layout.showFavourites ? 'Favourite Products' : 'All Products'),
+      drawer: MyAppDrawer(Layout.showFavourites ? 'Favourite Products' : 'All Products'),
       body: ProductsGridView(context, Layout.showFavourites),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:Shop/widgets/my_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -61,15 +62,7 @@ class CartItemTile extends StatelessWidget {
         },
         onDismissed: (direction) {
           Provider.of<Cart>(context, listen: false).removeProduct(productItemId);
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Product removed from cart',
-              ),
-              duration: Duration(seconds: Layout.SNACK_BAR_DURATION),
-            ),
-          );
+          MySnackBar(context, '$title removed from cart');
         },
         background: Container(
           padding: const EdgeInsets.only(right: Layout.SPACING * 1.5),

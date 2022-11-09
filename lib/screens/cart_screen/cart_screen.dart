@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import '../../providers/cart.dart';
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
-import '../../widgets/app_drawer.dart';
-import '../../widgets/custom_app_bar.dart';
+import '../../widgets/my_app_bar.dart';
+import '../../widgets/my_app_drawer.dart';
 import '../orders_screen/orders_screen.dart';
+import '../products_screen/products_screen.dart';
 import 'cart_item_tile.dart';
 
 class CartScreen extends StatelessWidget {
@@ -17,21 +18,25 @@ class CartScreen extends StatelessWidget {
     final currentCart = Provider.of<Cart>(context, listen: true);
 
     return Scaffold(
-      appBar: CustomAppBar(context, 'Cart'),
-      drawer: AppDrawer('Cart'),
+      appBar: MyAppBar('Cart', Icon(Icons.shop), () => _appBarHandler(context)),
+      drawer: MyAppDrawer('Cart'),
       body: Padding(
         padding: EdgeInsets.all(Layout.SPACING),
         child: Column(
           children: [
-            CartTotalCard(context, currentCart),
-            CartItemCards(context, currentCart),
+            CartTotalTile(context, currentCart),
+            CartItemTiles(context, currentCart),
           ],
         ),
       ),
     );
   }
 
-  Widget CartTotalCard(context, currentCart) {
+  void _appBarHandler(context) {
+    Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
+  }
+
+  Widget CartTotalTile(context, currentCart) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Layout.RADIUS),
@@ -94,7 +99,7 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget CartItemCards(context, currentCart) {
+  Widget CartItemTiles(context, currentCart) {
     return Expanded(
       child: ListView.builder(
         itemCount: currentCart.cartItems.length,

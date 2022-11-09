@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/products.dart';
 import '../../styles/layout.dart';
+import '../../widgets/my_snack_bar.dart';
 import 'edit_product_screen.dart';
 
 class UserProductTile extends StatelessWidget {
@@ -63,7 +64,7 @@ class UserProductTile extends StatelessWidget {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text('Remove Product'),
-        content: Text('Are you sure you want to remove this product?'),
+        content: Text('Are you sure you want to remove $title?'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -86,15 +87,7 @@ class UserProductTile extends StatelessWidget {
     );
     if (_deleteProduct) {
       Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Product successfully deleted',
-          ),
-          duration: Duration(seconds: Layout.SNACK_BAR_DURATION),
-        ),
-      );
+      MySnackBar(context, '$title removed from Your Products');
     }
   }
 }
