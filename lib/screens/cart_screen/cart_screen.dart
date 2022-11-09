@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../../providers/cart.dart';
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
-import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/custom_app_bar.dart';
 import '../orders_screen/orders_screen.dart';
 import 'cart_item_tile.dart';
 

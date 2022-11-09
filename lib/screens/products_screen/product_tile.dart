@@ -88,7 +88,6 @@ class ProductTile extends StatelessWidget {
       trailing: IconButton(
         onPressed: () {
           cart.addCartItem(product.productItemId, product.title, product.price);
-          // Going to access static method .of() in Scaffold widget. .of() almost always takes context. This establishes communication with the nearest Scaffold widget (in main.dart). Remember Scaffold holds and controls the entire screen.
 					ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

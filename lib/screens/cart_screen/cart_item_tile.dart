@@ -30,18 +30,13 @@ class CartItemTile extends StatelessWidget {
 
     return Padding(
       padding: itemTileMargins,
-      // Can add a confirmDismiss: (direction) {} argument to Dismissable widget. The function must return a bool (true/false).
       child: Dismissible(
         key: ValueKey(cartItemId),
         direction: DismissDirection.endToStart,
         confirmDismiss: (direction) async {
-          // A dialog can be shown anywhere, so it's not tied to a Scaffold.
           return showDialog(
-            // showDialog requires a context. context will look up the tree for the first context provided. In this case, the context provided by the CartItemTile build() method.
-            // showDialog return a Future (see below).
             context: context,
             barrierDismissible: false,
-            // All builders within a widgets build() method returns a different context, often referred to as 'ctx'. You can use this to return a number of different kinds of dialogs.
             builder: (ctx) => AlertDialog(
               title: Text('Remove Product'),
               content: Text('Are you sure you want to remove this product from your cart?'),
@@ -56,7 +51,6 @@ class CartItemTile extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // showDialog resolves to a value when it is popped.
                     Navigator.of(ctx).pop(true);
                   },
                   child: Text('Yes'),
@@ -73,12 +67,7 @@ class CartItemTile extends StatelessWidget {
               content: Text(
                 'Product removed from cart',
               ),
-              duration: Duration(seconds: 2),
-              // action: SnackBarAction(
-              //   onPressed: () {},
-              //   textColor: Theme.of(context).colorScheme.inversePrimary,
-              //   label: 'UNDO',
-              // ),
+              duration: Duration(seconds: Layout.SNACK_BAR_DURATION),
             ),
           );
         },

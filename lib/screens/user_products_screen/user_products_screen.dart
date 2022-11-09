@@ -12,11 +12,12 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProducts = Provider.of<Products>(context);
+    final _userProducts = Provider.of<Products>(context);
+
     return Scaffold(
       appBar: CustomAppBar(context, 'Your Products'),
       drawer: AppDrawer('Your Products'),
-      body: BuildProductList(userProducts),
+      body: BuildProductList(_userProducts),
     );
   }
 
@@ -46,13 +47,11 @@ class UserProductsScreen extends StatelessWidget {
         vertical: Layout.SPACING / 2,
         horizontal: Layout.SPACING,
       ),
-      // We set up a listener through Provider<Products>.of(context) above which will rebuild entire screen (Scaffold -> appBar: -> body:). But we could also use a Consumer<Products> here to only rebuild the ListView.
       child: ListView.builder(
-        // Remember <Products> returns a List<Product>.
         itemCount: userProducts.allProducts.length,
         itemBuilder: (_, index) {
           return UserProductTile(
-						userProducts.allProducts[index].productItemId,
+            userProducts.allProducts[index].productItemId,
             userProducts.allProducts[index].title,
             userProducts.allProducts[index].imageUrl,
           );

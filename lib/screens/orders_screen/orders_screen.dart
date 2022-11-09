@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../providers/orders.dart';
 import '../../styles/layout.dart';
-import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/custom_app_bar.dart';
 import 'order_item_tile.dart';
 
 class OrdersScreen extends StatelessWidget {

@@ -1,13 +1,15 @@
-import '../../providers/products.dart';
-import 'edit_product_screen.dart';
-import '../../styles/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/products.dart';
+import '../../styles/layout.dart';
+import 'edit_product_screen.dart';
 
 class UserProductTile extends StatelessWidget {
   final String productItemId;
   final String title;
   final String imageUrl;
+
   UserProductTile(this.productItemId, this.title, this.imageUrl);
 
   @override
@@ -23,7 +25,6 @@ class UserProductTile extends StatelessWidget {
         ),
         tileColor: Theme.of(context).colorScheme.primaryContainer,
         leading: CircleAvatar(
-          // backgroundImage; takes an ImageProvider such as NetworkImage(), not an image widget such as Image.network(). The ImageProvider just fetches an image - the CircleAvatar takes care of sizing, fit, etc. So you don't add any widget properties to NetworkImage().
           backgroundImage: NetworkImage(imageUrl),
         ),
         title: Text(
@@ -33,7 +34,6 @@ class UserProductTile extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
         ),
-        // Note that Row will take all space available in the ListTile and trailing: does not constrain its size.
         trailing: FittedBox(
           child: Row(
             children: [
@@ -92,12 +92,7 @@ class UserProductTile extends StatelessWidget {
           content: Text(
             'Product successfully deleted',
           ),
-          duration: Duration(seconds: 2),
-          // action: SnackBarAction(
-          //   onPressed: () {},
-          //   textColor: Theme.of(context).colorScheme.inversePrimary,
-          //   label: 'UNDO',
-          // ),
+          duration: Duration(seconds: Layout.SNACK_BAR_DURATION),
         ),
       );
     }

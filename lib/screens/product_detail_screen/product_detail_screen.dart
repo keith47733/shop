@@ -5,7 +5,6 @@ import '../../providers/products.dart';
 import '../../styles/layout.dart';
 
 class ProductDetailScreen extends StatelessWidget {
-  // You can name the widget screens route here, but don't forget to register it in routes{} in main.dart.
   static const routeName = '/product_detail_screen';
 
   @override
