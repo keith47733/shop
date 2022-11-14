@@ -22,17 +22,48 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  bool _isInit = true;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // initState would be the ideal method to load products from database since it only executs once when the widget is built. However, remember (context) isn't available right away in initState() b/c the widget has not been completely built. (Note Provider will work if you set listen: false).
+    // // Provider.of<Products>(context).fetchAllProducts();
+    // One 'hack' work-around is to use
+    // // Future.delayed(Duration.zero).then(() {...})
+    // Better to use didChangeDependencies like we did previously.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      // fetchAllProducts() is a Future (Future<void> fetchAllProducst() async{}), so code in products_screen.dart will not continue until code in data provider method is complete.
+      Provider.of<Products>(context).fetchAllProducts().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(Layout.showFavourites),
       drawer: MyAppDrawer(Layout.showFavourites ? 'Favourite Products' : 'All Products'),
-      body: ProductsGridView(context, Layout.showFavourites),
+      body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGridView(context, Layout.showFavourites),
     );
   }
 
   PreferredSizeWidget MainAppBar(showFavourites) {
     return AppBar(
+      elevation: Layout.ELEVATION,
       title: FittedBox(
         fit: BoxFit.scaleDown,
         child: Text(
@@ -64,32 +95,47 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final products =
         _showFavourites ? Provider.of<Products>(context).favouriteProducts : Provider.of<Products>(context).allProducts;
 
-    return products.isEmpty
-        ? Padding(
-            padding: const EdgeInsets.all(Layout.SPACING * 4),
-            child: Center(
-              child: Text(
-                'You haven\'t picked any favourites yet.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-          )
-        : GridView.builder(
-            padding: EdgeInsets.all(Layout.SPACING),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              childAspectRatio: 3 / 2,
-              crossAxisSpacing: Layout.SPACING,
-              mainAxisSpacing: Layout.SPACING * 2,
-            ),
-            itemCount: products.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ChangeNotifierProvider.value(
-                value: products[index],
-                child: ProductTile(),
-              );
-            },
-          );
+    if (_showFavourites && products.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(Layout.SPACING * 4),
+        child: Center(
+          child: Text(
+            'Click on the heart to mark a product as a favourite.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+      );
+    }
+
+    if (!_showFavourites && products.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(Layout.SPACING * 4),
+        child: Center(
+          child: Text(
+            'There are no products available at this time.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+      );
+    }
+
+    return GridView.builder(
+      padding: EdgeInsets.all(Layout.SPACING),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 1,
+        childAspectRatio: 3 / 2,
+        crossAxisSpacing: Layout.SPACING,
+        mainAxisSpacing: Layout.SPACING,
+      ),
+      itemCount: products.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ChangeNotifierProvider.value(
+          value: products[index],
+          child: ProductTile(),
+        );
+      },
+    );
   }
 }

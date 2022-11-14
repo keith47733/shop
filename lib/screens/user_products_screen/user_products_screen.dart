@@ -11,6 +11,10 @@ import 'user_product_tile.dart';
 class UserProductsScreen extends StatelessWidget {
   static const String routeName = '/user_products_screen';
 
+	Future<void> _refreshUserProducts(context) async {
+		await Provider.of<Products>(context, listen: false).fetchAllProducts();
+	}
+
   @override
   Widget build(BuildContext context) {
     final _userProducts = Provider.of<Products>(context);
@@ -18,7 +22,18 @@ class UserProductsScreen extends StatelessWidget {
     return Scaffold(
       appBar: MyAppBar('Your Products', Icon(Icons.note_add), () => _appBarHandler(context)),
       drawer: MyAppDrawer('Your Products'),
-      body: BuildProductList(_userProducts),
+      body: _userProducts.allProducts.isEmpty
+			? Padding(
+        padding: const EdgeInsets.all(Layout.SPACING * 6),
+        child: Center(
+          child: Text(
+            'There are no products in stock.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+      )
+			: BuildProductList(context, _userProducts),
     );
   }
 
@@ -26,22 +41,25 @@ class UserProductsScreen extends StatelessWidget {
     Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: 'add');
   }
 
-  Widget BuildProductList(userProducts) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: Layout.SPACING / 2,
-        horizontal: Layout.SPACING,
-      ),
-      child: ListView.builder(
-        itemCount: userProducts.allProducts.length,
-        itemBuilder: (_, index) {
-          return UserProductTile(
-            userProducts.allProducts[index].productItemId,
-            userProducts.allProducts[index].title,
-            userProducts.allProducts[index].imageUrl,
-          );
-        },
-      ),
-    );
+  Widget BuildProductList(context, userProducts) {
+    return RefreshIndicator(
+			onRefresh: () => _refreshUserProducts(context),
+			child: Padding(
+				padding: const EdgeInsets.symmetric(
+					vertical: Layout.SPACING / 2,
+					horizontal: Layout.SPACING,
+				),
+				child: ListView.builder(
+					itemCount: userProducts.allProducts.length,
+					itemBuilder: (_, index) {
+						return UserProductTile(
+							userProducts.allProducts[index].productItemId,
+							userProducts.allProducts[index].title,
+							userProducts.allProducts[index].imageUrl,
+						);
+					},
+				),
+			),
+		);
   }
 }

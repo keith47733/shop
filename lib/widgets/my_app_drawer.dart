@@ -13,9 +13,11 @@ class MyAppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+			elevation: Layout.ELEVATION,
       child: Column(
         children: [
           AppBar(
+						elevation: Layout.ELEVATION,
             title: Text(
               'Bitches Be Shopping',
               style: TextStyle(fontFamily: 'Merriweather'),

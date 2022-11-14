@@ -15,6 +15,8 @@ class EditProductScreen extends StatefulWidget {
 }
 
 class _EditProductScreenState extends State<EditProductScreen> {
+  bool _isLoading = false;
+
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController _titleController = TextEditingController();
@@ -84,7 +86,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  // Updated to reflect async code (see Product.addProduct).
+  Future<void> _saveForm() async {
+    // Hide the keyboard with a short delay so error dialog doesn't jump.
+    FocusScope.of(context).unfocus();
+    await Future.delayed(Duration(milliseconds: 500));
+
     if (_formKey.currentState == null) {
       return;
     }
@@ -94,18 +101,61 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     _formKey.currentState!.save();
 
+    setState(() {
+      _isLoading = true;
+    });
+
     if (_editedProduct.productItemId == 'add') {
-      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-      MySnackBar(context, '${_editedProduct.title} added to Your Products');
+      bool isError = false;
+      // Refer to Product class - .addProduct() returns a Future, so we can chain a .then() Future function. Note that .then resolves to a void that we still have to accept with .then((_) {}).
+      // It's best to put Realtime Database http logic/commands outside your widget.
+      try {
+        await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+        // // .catchError((error) {
+        // This catchError() will catch the throw error; from the catchError() in the data provider. Now we catch the error in the Widget where we can do something with the UI. Since catchError() is a Future placed before .then(), and showDialog() can be returned as a Future, then() will still execute after the catchError() function.
+      } catch (error) {
+        isError = true;
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Error'),
+            content: Text("Something went wrong"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Use the builder's context, ctx.
+                  Navigator.of(ctx).pop();
+                },
+                child: Text('Okay'),
+              ),
+            ],
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+        if (!isError) {
+          MySnackBar(context, '${_editedProduct.title} added to Your Products');
+        }
+      }
     } else {
-      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.productItemId, _editedProduct);
-			MySnackBar(context, 'Updated ${_editedProduct.title}');
+      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.productItemId, _editedProduct);
+      setState(() {
+        _isLoading = false;
+      });
+      // AGAIN, CAN IMPLEMENT ERROR HANDLING AS ABOVE
+      Navigator.of(context).pop();
+      MySnackBar(context, 'Updated ${_editedProduct.title}');
     }
-    Navigator.of(context).pop();
+    // We don't want to pop() the add/edit product screen until it has been successfully added to the database and local memory. In the meantime, show loading spinner.
+    // // Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    _imageUrlController.text = 'https://usa.yamaha.com/files/FGX5_f_0001_e000fdbd6d63dc6bc6c8f28e44819bf7.jpg';
     final formFieldDecoration = InputDecoration(
       floatingLabelBehavior: FloatingLabelBehavior.always,
       labelStyle: Theme.of(context).textTheme.titleLarge,
@@ -128,7 +178,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       appBar: _editedProduct.productItemId == 'add'
           ? MyAppBar('Add Product', Icon(Icons.save), _saveForm)
           : MyAppBar('Edit Product', Icon(Icons.save), _saveForm),
-      body: BuildInputForm(context, formFieldDecoration),
+      body: _isLoading ? Center(child: CircularProgressIndicator()) : BuildInputForm(context, formFieldDecoration),
     );
   }
 
@@ -179,7 +229,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           return 'Please enter a title';
         }
         if (value.trim().length < 5) {
-          return 'Please enter at least 5 characters for your title';
+          return 'Please enter at least 5 characters';
         }
         return null;
       },
@@ -213,7 +263,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           return 'Please enter a description';
         }
         if (value.trim().length < 10) {
-          return 'Please enter at least 10 characters for your description';
+          return 'Please enter at least 10 characters';
         }
         return null;
       },

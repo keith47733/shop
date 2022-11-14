@@ -20,7 +20,10 @@ class UserProductTile extends StatelessWidget {
         vertical: Layout.SPACING / 2,
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(Layout.SPACING / 2),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: Layout.SPACING / 1.5,
+          horizontal: Layout.SPACING,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Layout.RADIUS),
         ),
@@ -31,7 +34,6 @@ class UserProductTile extends StatelessWidget {
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontFamily: 'Merriweather',
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
         ),
@@ -46,7 +48,9 @@ class UserProductTile extends StatelessWidget {
                 icon: Icon(Icons.edit),
               ),
               IconButton(
-                onPressed: () => _deleteProduct(context, productItemId),
+                onPressed: () async {
+                  _deleteProduct(context, productItemId);
+                },
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                 icon: Icon(Icons.delete),
               )
@@ -58,7 +62,6 @@ class UserProductTile extends StatelessWidget {
   }
 
   void _deleteProduct(context, productItemId) async {
-    bool _deleteProduct = false;
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -69,7 +72,6 @@ class UserProductTile extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              _deleteProduct = false;
             },
             child: Text(
               'No',
@@ -78,16 +80,21 @@ class UserProductTile extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              _deleteProduct = true;
+							Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
+              // try {
+              //   await Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
+              //   // Flutter can't resolve context when wrapped in an async try-catch.
+              //   MySnackBar(context, '$title removed from Your Products');
+              // } catch (error) {
+              //   MySnackBar(context, 'Could not remove $title from Your Products');
+              // }
             },
             child: Text('Yes'),
           ),
         ],
       ),
     );
-    if (_deleteProduct) {
-      Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
-      MySnackBar(context, '$title removed from Your Products');
-    }
+    // Need to modify deleteProduct() method to return success/failure.
+    // // MySnackBar(context, '$title removed from Your Products');
   }
 }

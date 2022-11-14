@@ -15,6 +15,7 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+			elevation: Layout.ELEVATION,
       title: Text(
         title,
         style: TextStyle(fontFamily: 'Merriweather'),

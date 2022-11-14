@@ -6,6 +6,7 @@ import '../../providers/orders.dart';
 import '../../styles/layout.dart';
 import '../../widgets/my_app_bar.dart';
 import '../../widgets/my_app_drawer.dart';
+import '../../widgets/my_snack_bar.dart';
 import '../orders_screen/orders_screen.dart';
 import '../products_screen/products_screen.dart';
 import 'cart_item_tile.dart';
@@ -73,6 +74,7 @@ class CartScreen extends StatelessWidget {
                         cartProducts: currentCart.cartItems.values.toList(),
                         total: currentCart.cartTotal,
                       );
+                      MySnackBar(context, 'Your order has been placed');
                       Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
                       currentCart.clearCart();
                     },

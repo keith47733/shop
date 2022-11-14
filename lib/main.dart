@@ -15,7 +15,7 @@ import 'styles/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // final _screenWidth = WidgetsBinding.instance.window.physicalSize.width;
+  final _screenWidth = WidgetsBinding.instance.window.physicalSize.width;
   runApp(MyApp());
 }
 
