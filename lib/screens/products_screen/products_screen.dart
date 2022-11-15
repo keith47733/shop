@@ -26,23 +26,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
   bool _isLoading = false;
 
   @override
-  void initState() {
-    super.initState();
-    // initState would be the ideal method to load products from database since it only executs once when the widget is built. However, remember (context) isn't available right away in initState() b/c the widget has not been completely built. (Note Provider will work if you set listen: false).
-    // // Provider.of<Products>(context).fetchAllProducts();
-    // One 'hack' work-around is to use
-    // // Future.delayed(Duration.zero).then(() {...})
-    // Better to use didChangeDependencies like we did previously.
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInit) {
       setState(() {
         _isLoading = true;
       });
-      // fetchAllProducts() is a Future (Future<void> fetchAllProducst() async{}), so code in products_screen.dart will not continue until code in data provider method is complete.
       Provider.of<Products>(context).fetchAllProducts().then((_) {
         setState(() {
           _isLoading = false;
@@ -68,7 +57,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         fit: BoxFit.scaleDown,
         child: Text(
           showFavourites ? 'Favourite Products' : 'Bitches Be Shopping',
-          style: TextStyle(fontFamily: 'Merriweather'),
+          style: TextStyle(fontFamily: 'Oswald'),
         ),
       ),
       actions: [

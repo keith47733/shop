@@ -27,8 +27,8 @@ class _OrderItemTileState extends State<OrderItemTile> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(Layout.RADIUS),
         child: ExpansionTile(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          collapsedBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          collapsedBackgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           leading: CircleAvatar(
             backgroundColor: Theme.of(context).colorScheme.primary,
             child: Text(
@@ -38,11 +38,11 @@ class _OrderItemTileState extends State<OrderItemTile> {
           ),
           title: Text(
             '\$${widget.orderItem.amount.toStringAsFixed(2)}',
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
           ),
           subtitle: Text(
             DateFormat('MMM d\, yyyy').format(widget.orderItem.orderDate),
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
           ),
           children: [
             Padding(

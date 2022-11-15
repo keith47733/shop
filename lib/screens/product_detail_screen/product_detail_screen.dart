@@ -15,12 +15,6 @@ class ProductDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: MyAppBar('Product Detail', null, null),
-      // AppBar(
-      //   title: Text(
-      //     'Product Detail',
-      //     style: TextStyle(fontFamily: 'Merriweather'),
-      //   ),
-      // ),
       body: ProductDetails(context, detailedProduct),
     );
   }
@@ -45,7 +39,7 @@ class ProductDetailScreen extends StatelessWidget {
                   detailedProduct.title,
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         color: Theme.of(context).colorScheme.onBackground,
-                        fontFamily: 'Merriweather',
+                        fontFamily: 'Oswald',
                       ),
                 ),
                 SizedBox(height: Layout.SPACING),

@@ -81,20 +81,11 @@ class UserProductTile extends StatelessWidget {
             onPressed: () {
               Navigator.of(ctx).pop();
 							Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
-              // try {
-              //   await Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
-              //   // Flutter can't resolve context when wrapped in an async try-catch.
-              //   MySnackBar(context, '$title removed from Your Products');
-              // } catch (error) {
-              //   MySnackBar(context, 'Could not remove $title from Your Products');
-              // }
             },
             child: Text('Yes'),
           ),
         ],
       ),
     );
-    // Need to modify deleteProduct() method to return success/failure.
-    // // MySnackBar(context, '$title removed from Your Products');
   }
 }

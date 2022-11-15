@@ -7,7 +7,7 @@ class AppTheme {
           seedColor: Colors.blueGrey,
         );
     return ThemeData(
-      fontFamily: 'Lato',
+      fontFamily: 'SourceSansPro',
       colorScheme: scheme,
     );
   }
@@ -16,7 +16,7 @@ class AppTheme {
     ColorScheme scheme =
         darkColorScheme ?? ColorScheme.fromSeed(seedColor: Colors.blueGrey, brightness: Brightness.dark);
     return ThemeData(
-      fontFamily: 'Lato',
+      fontFamily: 'SourceSansPro',
       colorScheme: scheme,
     );
   }

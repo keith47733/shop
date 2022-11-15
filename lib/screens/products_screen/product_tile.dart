@@ -65,10 +65,15 @@ class ProductTile extends StatelessWidget {
       leading: Consumer<ProductItem>(
         builder: (ctx, product, _) => IconButton(
           onPressed: () {
-            product.toggleFavourite();
-						product.isFavourite
-						? MySnackBar(context, '${product.title} added to favourites')
-						: MySnackBar(context, '${product.title} removed from favourites');
+						product.toggleFavourite(context);
+            // try {
+            //   await product.toggleFavourite();
+            //   product.isFavourite
+            //       ? MySnackBar(context, '${product.title} added to favourites')
+            //       : MySnackBar(context, '${product.title} removed from favourites');
+            // } catch (error) {
+            //   MySnackBar(context, 'Could not update favourite status');
+            // }
           },
           icon: product.isFavourite
               ? Icon(
@@ -85,14 +90,14 @@ class ProductTile extends StatelessWidget {
         product.title,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
               color: Theme.of(context).colorScheme.onSecondary,
-              fontFamily: 'Merriweather',
+              fontFamily: 'Oswald',
             ),
         textAlign: TextAlign.center,
       ),
       trailing: IconButton(
         onPressed: () {
           cart.addCartItem(product.productItemId, product.title, product.price);
-					MySnackBar(context, '${product.title} added to cart');
+          MySnackBar(context, '${product.title} added to cart');
         },
         icon: Icon(
           Icons.shopping_cart,

@@ -18,7 +18,7 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
 			elevation: Layout.ELEVATION,
       title: Text(
         title,
-        style: TextStyle(fontFamily: 'Merriweather'),
+        style: TextStyle(fontFamily: 'Oswald'),
       ),
       actions: [
         if (icon != null && handler != null)

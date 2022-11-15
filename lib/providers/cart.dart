@@ -45,9 +45,9 @@ class Cart with ChangeNotifier {
         productId,
         () => CartItem(
           cartItemId: DateTime.now().toString(),
+          quantity: 1,
           title: title,
           price: price,
-          quantity: 1,
         ),
       );
     }
@@ -69,14 +69,14 @@ class Cart with ChangeNotifier {
         (_existingCartItem) => CartItem(
           cartItemId: _existingCartItem.cartItemId,
           title: _existingCartItem.title,
+          quantity: _existingCartItem.quantity - 1,
           price: _existingCartItem.price,
-					quantity: _existingCartItem.quantity - 1,
         ),
       );
     } else {
-			_cartProducts.remove(productId);
-		}
-		notifyListeners();
+      _cartProducts.remove(productId);
+    }
+    notifyListeners();
   }
 
   void clearCart() {

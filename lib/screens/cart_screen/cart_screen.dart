@@ -68,31 +68,14 @@ class CartScreen extends StatelessWidget {
             ),
             SizedBox(width: Layout.SPACING),
             currentCart.cartTotal > 0
-                ? TextButton(
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(
-                        cartProducts: currentCart.cartItems.values.toList(),
-                        total: currentCart.cartTotal,
-                      );
-                      MySnackBar(context, 'Your order has been placed');
-                      Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
-                      currentCart.clearCart();
-                    },
-                    child: Text(
-                      textAlign: TextAlign.center,
-                      'Place\nOrder',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  )
+                ? OrderButton(currentCart: currentCart)
                 : Text(
                     textAlign: TextAlign.center,
-                    'Your cart is\nEmpty',
+                    'Your cart\nis Empty',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontFamily: 'Oswald',
                           color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.normal,
                         ),
                   ),
           ],
@@ -114,5 +97,54 @@ class CartScreen extends StatelessWidget {
             )),
       ),
     );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  final currentCart;
+
+  const OrderButton({
+    required this.currentCart,
+  });
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        onPressed: (widget.currentCart.cartTotal <= 0 || isLoading == true)
+            // Flutter automatically disables a button if onPressed: is null.
+            ? null
+            : () async {
+                setState(() {
+                  isLoading = true;
+                });
+                await Provider.of<Orders>(context, listen: false).addOrder(
+                  cartProducts: widget.currentCart.cartItems.values.toList(),
+                  total: widget.currentCart.cartTotal,
+                );
+                setState(() {
+                  isLoading = false;
+                });
+                MySnackBar(context, 'Your order has been placed');
+                Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
+                widget.currentCart.clearCart();
+              },
+        child: !isLoading
+            ? Text(
+                textAlign: TextAlign.center,
+                'PLACE\nORDER',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontFamily: 'Oswald',
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+              )
+            : const Center(child: CircularProgressIndicator()));
   }
 }

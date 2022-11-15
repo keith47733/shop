@@ -22,15 +22,9 @@ class HttpException implements Exception {
   final String message;
 
   HttpException(this.message);
-
-	// return super.toString(); would normally return Instance of HttpException object. But we will @override the default toString() method and use our that returns the more granular error message as a string, not an 'Instance of...'.
 	
   @override
   String toString() {
-		// This would normally return 'Instance of HttpException' with:
-		// // return super.toString();
-
-		// We're overriding the default toString() and returning a string that was passed to HttpException (and throwing an Exception that can be caught in a .catchError() block.
     return message;
   }
 }

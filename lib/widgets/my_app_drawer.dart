@@ -20,7 +20,7 @@ class MyAppDrawer extends StatelessWidget {
 						elevation: Layout.ELEVATION,
             title: Text(
               'Bitches Be Shopping',
-              style: TextStyle(fontFamily: 'Merriweather'),
+              style: TextStyle(fontFamily: 'Oswald'),
             ),
             automaticallyImplyLeading: false,
           ),

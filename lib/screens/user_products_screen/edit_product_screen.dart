@@ -86,9 +86,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  // Updated to reflect async code (see Product.addProduct).
   Future<void> _saveForm() async {
-    // Hide the keyboard with a short delay so error dialog doesn't jump.
     FocusScope.of(context).unfocus();
     await Future.delayed(Duration(milliseconds: 500));
 
@@ -107,12 +105,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     if (_editedProduct.productItemId == 'add') {
       bool isError = false;
-      // Refer to Product class - .addProduct() returns a Future, so we can chain a .then() Future function. Note that .then resolves to a void that we still have to accept with .then((_) {}).
-      // It's best to put Realtime Database http logic/commands outside your widget.
       try {
         await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-        // // .catchError((error) {
-        // This catchError() will catch the throw error; from the catchError() in the data provider. Now we catch the error in the Widget where we can do something with the UI. Since catchError() is a Future placed before .then(), and showDialog() can be returned as a Future, then() will still execute after the catchError() function.
       } catch (error) {
         isError = true;
         await showDialog(
@@ -123,7 +117,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  // Use the builder's context, ctx.
                   Navigator.of(ctx).pop();
                 },
                 child: Text('Okay'),
@@ -145,12 +138,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() {
         _isLoading = false;
       });
-      // AGAIN, CAN IMPLEMENT ERROR HANDLING AS ABOVE
       Navigator.of(context).pop();
       MySnackBar(context, 'Updated ${_editedProduct.title}');
     }
-    // We don't want to pop() the add/edit product screen until it has been successfully added to the database and local memory. In the meantime, show loading spinner.
-    // // Navigator.of(context).pop();
   }
 
   @override
