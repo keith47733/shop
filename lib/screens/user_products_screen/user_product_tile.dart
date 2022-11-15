@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../providers/products.dart';
 import '../../styles/layout.dart';
-import '../../widgets/my_snack_bar.dart';
 import 'edit_product_screen.dart';
 
 class UserProductTile extends StatelessWidget {

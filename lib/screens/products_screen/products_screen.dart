@@ -44,13 +44,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(Layout.showFavourites),
+      appBar: AppBarWithCartBadge(Layout.showFavourites),
       drawer: MyAppDrawer(Layout.showFavourites ? 'Favourite Products' : 'All Products'),
       body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGridView(context, Layout.showFavourites),
     );
   }
 
-  PreferredSizeWidget MainAppBar(showFavourites) {
+  PreferredSizeWidget AppBarWithCartBadge(showFavourites) {
     return AppBar(
       elevation: Layout.ELEVATION,
       title: FittedBox(

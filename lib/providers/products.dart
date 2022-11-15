@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../mocks/mock_inventory.dart';
 import '../models/http_exception.dart';
-import '../widgets/my_snack_bar.dart';
 import 'product_item.dart';
 
 class Products with ChangeNotifier {
@@ -29,11 +27,9 @@ class Products with ChangeNotifier {
       if (response.body == 'null') {
         return;
       }
-
+			
       Map<String, dynamic> extractedData = json.decode(response.body);
-
       final List<ProductItem> loadedProducts = [];
-
       extractedData.forEach((productId, productData) {
         loadedProducts.add(ProductItem(
           productItemId: productId,

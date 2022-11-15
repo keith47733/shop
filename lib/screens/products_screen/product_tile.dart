@@ -66,14 +66,6 @@ class ProductTile extends StatelessWidget {
         builder: (ctx, product, _) => IconButton(
           onPressed: () {
 						product.toggleFavourite(context);
-            // try {
-            //   await product.toggleFavourite();
-            //   product.isFavourite
-            //       ? MySnackBar(context, '${product.title} added to favourites')
-            //       : MySnackBar(context, '${product.title} removed from favourites');
-            // } catch (error) {
-            //   MySnackBar(context, 'Could not update favourite status');
-            // }
           },
           icon: product.isFavourite
               ? Icon(

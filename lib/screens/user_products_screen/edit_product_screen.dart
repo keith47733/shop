@@ -45,6 +45,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void didChangeDependencies() {
+		super.didChangeDependencies();
     if (_isInit) {
       final productItemId = ModalRoute.of(context)!.settings.arguments as String;
       if (productItemId != 'add') {
@@ -73,9 +74,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _updateImageUrl() {
     final value = _imageUrlController.text;
     if (!_imageUrlFocusNode.hasFocus) {
-      if (value == null) {
-        return;
-      }
       if (value.trim().isEmpty) {
         return;
       }
