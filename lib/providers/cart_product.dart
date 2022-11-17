@@ -1,11 +1,11 @@
-class CartItem {
-  final String cartItemId;
+class CartProduct {
+  final String cartProductId;
   final String title;
   final int quantity;
   final double price;
 
-  CartItem({
-    required this.cartItemId,
+  CartProduct({
+    required this.cartProductId,
     required this.title,
     required this.quantity,
     required this.price,

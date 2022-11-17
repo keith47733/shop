@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/cart.dart';
-import '../../providers/products.dart';
+import '../../providers/inventory.dart';
 import '../../styles/layout.dart';
 import '../../widgets/my_app_drawer.dart';
 import '../cart_screen/cart_screen.dart';
@@ -15,7 +15,7 @@ enum Filter {
 }
 
 class ProductsScreen extends StatefulWidget {
-  static const routeName = '/';
+  static const routeName = '/products_screen';
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -32,7 +32,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       setState(() {
         _isLoading = true;
       });
-      Provider.of<Products>(context).fetchAllProducts().then((_) {
+      Provider.of<Inventory>(context).fetchProducts(filterByUser: false).then((_) {
         setState(() {
           _isLoading = false;
         });
@@ -44,13 +44,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWithCartBadge(Layout.showFavourites),
-      drawer: MyAppDrawer(Layout.showFavourites ? 'Favourite Products' : 'All Products'),
+      appBar: AppBarWithCartAndBadge(Layout.showFavourites),
+      drawer: MyAppDrawer(Layout.showFavourites ? 'Favourite Products' : 'Shop'),
       body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGridView(context, Layout.showFavourites),
     );
   }
 
-  PreferredSizeWidget AppBarWithCartBadge(showFavourites) {
+  PreferredSizeWidget AppBarWithCartAndBadge(showFavourites) {
     return AppBar(
       elevation: Layout.ELEVATION,
       title: FittedBox(
@@ -82,7 +82,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Widget ProductsGridView(context, _showFavourites) {
     final products =
-        _showFavourites ? Provider.of<Products>(context).favouriteProducts : Provider.of<Products>(context).allProducts;
+        _showFavourites ? Provider.of<Inventory>(context).favouriteProducts : Provider.of<Inventory>(context).products;
 
     if (_showFavourites && products.isEmpty) {
       return Padding(
@@ -102,7 +102,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         padding: const EdgeInsets.all(Layout.SPACING * 4),
         child: Center(
           child: Text(
-            'There are no products available at this time.',
+            'There are no products available.\nAdd a product to Your Products or try again later.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
@@ -111,12 +111,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
 
     return GridView.builder(
-      padding: EdgeInsets.all(Layout.SPACING),
+      padding: EdgeInsets.symmetric(
+        vertical: Layout.SPACING * 2,
+        horizontal: Layout.SPACING * 1.5,
+      ),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 1,
         childAspectRatio: 3 / 2,
-        crossAxisSpacing: Layout.SPACING,
-        mainAxisSpacing: Layout.SPACING,
+        crossAxisSpacing: Layout.SPACING * 2,
+        mainAxisSpacing: Layout.SPACING * 2,
       ),
       itemCount: products.length,
       itemBuilder: (BuildContext context, int index) {

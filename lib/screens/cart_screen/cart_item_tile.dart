@@ -1,4 +1,5 @@
 import 'package:Shop/widgets/my_snack_bar.dart';
+import 'package:Shop/widgets/show_confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,59 +36,64 @@ class CartItemTile extends StatelessWidget {
         key: ValueKey(cartItemId),
         direction: DismissDirection.endToStart,
         confirmDismiss: (direction) async {
-          return showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (ctx) => AlertDialog(
-              title: Text('Remove Product'),
-              content: Text('Are you sure you want to remove this product from your cart?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop(false);
-                  },
-                  child: Text(
-                    'No',
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop(true);
-                  },
-                  child: Text('Yes'),
-                ),
-              ],
-            ),
+          return showConfirmDialog(
+            context,
+            'Remove Product',
+            'Are you sure you want to remove this product from your cart?',
           );
+          // return showDialog(
+          //   context: context,
+          //   barrierDismissible: false,
+          //   builder: (ctx) => AlertDialog(
+          //     title: Text('Remove Product'),
+          //     content: Text('Are you sure you want to remove this product from your cart?'),
+          //     actions: <Widget>[
+          //       TextButton(
+          //         onPressed: () {
+          //           Navigator.of(ctx).pop(false);
+          //         },
+          //         child: Text(
+          //           'No',
+          //         ),
+          //       ),
+          //       TextButton(
+          //         onPressed: () {
+          //           Navigator.of(ctx).pop(true);
+          //         },
+          //         child: Text('Yes'),
+          //       ),
+          //     ],
+          //   ),
+          // );
         },
         onDismissed: (direction) {
           Provider.of<Cart>(context, listen: false).removeProduct(productItemId);
           MySnackBar(context, '$title removed from cart');
         },
         background: Container(
-          padding: const EdgeInsets.only(right: Layout.SPACING * 1.5),
+          padding: const EdgeInsets.only(right: Layout.SPACING * 2),
           alignment: Alignment.centerRight,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Layout.RADIUS),
-            color: Theme.of(context).colorScheme.errorContainer,
+            color: Theme.of(context).colorScheme.error.withOpacity(0.6),
           ),
           child: Icon(
             Icons.delete,
             size: Layout.ICONSIZE,
-            color: Theme.of(context).colorScheme.onErrorContainer,
+            color: Theme.of(context).colorScheme.onError,
           ),
         ),
         child: ListTile(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Layout.RADIUS),
           ),
-          tileColor: Theme.of(context).colorScheme.secondaryContainer,
+          tileColor: Theme.of(context).colorScheme.tertiaryContainer,
           leading: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.secondary,
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
             child: Text(
               '$quantity',
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: Theme.of(context).colorScheme.onTertiary,
                   ),
             ),
           ),
@@ -96,11 +102,11 @@ class CartItemTile extends StatelessWidget {
             'x \$${(price)}',
           ),
           trailing: Chip(
-            backgroundColor: Theme.of(context).colorScheme.secondary,
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
             label: Text(
               '\$${(quantity * price).toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: Theme.of(context).colorScheme.onTertiary,
                   ),
             ),
           ),

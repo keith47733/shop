@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/product_item.dart';
-import '../../providers/products.dart';
+import '../../providers/product.dart';
+import '../../providers/inventory.dart';
+import '../../styles/form_field_decoration.dart';
 import '../../styles/layout.dart';
 import '../../widgets/my_app_bar.dart';
 import '../../widgets/my_snack_bar.dart';
@@ -26,8 +27,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   FocusNode _imageUrlFocusNode = FocusNode();
 
-  var _editedProduct = ProductItem(
-    productItemId: 'add',
+  var _editedProduct = Product(
+    productId: 'add',
     title: '',
     price: 0.0,
     description: '',
@@ -45,11 +46,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void didChangeDependencies() {
-		super.didChangeDependencies();
+    super.didChangeDependencies();
     if (_isInit) {
       final productItemId = ModalRoute.of(context)!.settings.arguments as String;
       if (productItemId != 'add') {
-        _editedProduct = Provider.of<Products>(context, listen: false).findProductById(productItemId);
+        _editedProduct = Provider.of<Inventory>(context, listen: false).findProductById(productItemId);
         _titleController.text = _editedProduct.title;
         _descriptionController.text = _editedProduct.description;
         _priceController.text = _editedProduct.price.toString();
@@ -101,10 +102,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
 
-    if (_editedProduct.productItemId == 'add') {
+    if (_editedProduct.productId == 'add') {
       bool isError = false;
       try {
-        await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+        await Provider.of<Inventory>(context, listen: false).addProduct(_editedProduct);
       } catch (error) {
         isError = true;
         await showDialog(
@@ -132,7 +133,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         }
       }
     } else {
-      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.productItemId, _editedProduct);
+      await Provider.of<Inventory>(context, listen: false).updateProduct(_editedProduct.productId, _editedProduct);
       setState(() {
         _isLoading = false;
       });
@@ -143,34 +144,33 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _imageUrlController.text = 'https://usa.yamaha.com/files/FGX5_f_0001_e000fdbd6d63dc6bc6c8f28e44819bf7.jpg';
-    final formFieldDecoration = InputDecoration(
-      floatingLabelBehavior: FloatingLabelBehavior.always,
-      labelStyle: Theme.of(context).textTheme.titleLarge,
-      errorStyle: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.error),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.onBackground, width: Layout.BORDER_WIDTH),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: Layout.BORDER_WIDTH),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: Layout.BORDER_WIDTH),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: Layout.BORDER_WIDTH),
-      ),
-    );
+    // final formFieldDecoration = InputDecoration(
+    //   floatingLabelBehavior: FloatingLabelBehavior.always,
+    //   labelStyle: Theme.of(context).textTheme.titleLarge,
+    //   errorStyle: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.error),
+    //   enabledBorder: OutlineInputBorder(
+    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.onBackground, width: Layout.BORDER_WIDTH),
+    //   ),
+    //   focusedBorder: OutlineInputBorder(
+    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: Layout.BORDER_WIDTH),
+    //   ),
+    //   errorBorder: OutlineInputBorder(
+    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: Layout.BORDER_WIDTH),
+    //   ),
+    //   focusedErrorBorder: OutlineInputBorder(
+    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: Layout.BORDER_WIDTH),
+    //   ),
+    // );
 
     return Scaffold(
-      appBar: _editedProduct.productItemId == 'add'
+      appBar: _editedProduct.productId == 'add'
           ? MyAppBar('Add Product', Icon(Icons.save), _saveForm)
           : MyAppBar('Edit Product', Icon(Icons.save), _saveForm),
-      body: _isLoading ? Center(child: CircularProgressIndicator()) : BuildInputForm(context, formFieldDecoration),
+      body: _isLoading ? Center(child: CircularProgressIndicator()) : BuildInputForm(context),
     );
   }
 
-  Widget BuildInputForm(context, formFieldDecoration) {
+  Widget BuildInputForm(context) {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -181,18 +181,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
           ),
           child: Column(
             children: <Widget>[
-              TitleFormField(formFieldDecoration),
+              TitleFormField(),
               SizedBox(height: Layout.SPACING * 1.5),
-              DescriptionFormField(formFieldDecoration),
+              DescriptionFormField(),
               SizedBox(height: Layout.SPACING * 1.5),
-              PriceFormField(formFieldDecoration),
+              PriceFormField(),
               SizedBox(height: Layout.SPACING * 1.5),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   ImagePreview(),
                   SizedBox(width: Layout.SPACING),
-                  ImageUrlFormField(formFieldDecoration),
+                  ImageUrlFormField(),
                 ],
               ),
             ],
@@ -202,10 +202,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget TitleFormField(formFieldDecoration) {
+  Widget TitleFormField() {
     return TextFormField(
       autofocus: true,
-      decoration: formFieldDecoration.copyWith(labelText: 'Title'),
+			decoration: formFieldDecoration(context).copyWith(labelText: 'Title'),
+      // decoration: formFieldDecoration.copyWith(labelText: 'Title'),
       keyboardType: TextInputType.text,
       controller: _titleController,
       textInputAction: TextInputAction.next,
@@ -223,8 +224,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       },
       onSaved: (value) {
         if (value != null) {
-          _editedProduct = ProductItem(
-            productItemId: _editedProduct.productItemId,
+          _editedProduct = Product(
+            productId: _editedProduct.productId,
             title: value,
             description: _editedProduct.description,
             price: _editedProduct.price,
@@ -236,9 +237,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget DescriptionFormField(formFieldDecoration) {
+  Widget DescriptionFormField() {
     return TextFormField(
-      decoration: formFieldDecoration.copyWith(labelText: 'Description'),
+      decoration: formFieldDecoration(context).copyWith(labelText: 'Description'),
+			// decoration: formFieldDecoration.copyWith(labelText: 'Description'),
       keyboardType: TextInputType.multiline,
       maxLines: 3,
       controller: _descriptionController,
@@ -257,8 +259,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       },
       onSaved: (value) {
         if (value != null) {
-          _editedProduct = ProductItem(
-            productItemId: _editedProduct.productItemId,
+          _editedProduct = Product(
+            productId: _editedProduct.productId,
             title: _editedProduct.title,
             description: value,
             price: _editedProduct.price,
@@ -270,9 +272,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget PriceFormField(formFieldDecoration) {
+  Widget PriceFormField() {
     return TextFormField(
-      decoration: formFieldDecoration.copyWith(labelText: 'Price'),
+      decoration: formFieldDecoration(context).copyWith(labelText: 'Price'),
+			// decoration: formFieldDecoration.copyWith(labelText: 'Price'),
       keyboardType: TextInputType.number,
       controller: _priceController,
       textInputAction: TextInputAction.next,
@@ -293,8 +296,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       },
       onSaved: (value) {
         if (value != null) {
-          _editedProduct = ProductItem(
-            productItemId: _editedProduct.productItemId,
+          _editedProduct = Product(
+            productId: _editedProduct.productId,
             title: _editedProduct.title,
             description: _editedProduct.description,
             price: double.parse(value),
@@ -306,36 +309,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget ImagePreview() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(Layout.RADIUS / 2),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.30,
-        height: MediaQuery.of(context).size.width * 0.30,
-        child: _imageUrlController.text.isEmpty
-            ? Padding(
-                padding: const EdgeInsets.all(Layout.SPACING / 4),
-                child: Center(
-                  child: Text(
-                    'Please enter\na valid URL',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )
-            : FittedBox(
-                child: Image.network(
-                  _imageUrlController.text,
-                  fit: BoxFit.cover,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget ImageUrlFormField(formFieldDecoration) {
+  Widget ImageUrlFormField() {
     return Expanded(
       child: TextFormField(
-        decoration: formFieldDecoration.copyWith(labelText: 'Image URL'),
+        decoration: formFieldDecoration(context).copyWith(labelText: 'Image Url'),
+				// decoration: formFieldDecoration.copyWith(labelText: 'Image URL'),
         keyboardType: TextInputType.url,
         controller: _imageUrlController,
         focusNode: _imageUrlFocusNode,
@@ -358,8 +336,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
         onFieldSubmitted: (_) => _saveForm(),
         onSaved: (value) {
           if (value != null) {
-            _editedProduct = ProductItem(
-              productItemId: _editedProduct.productItemId,
+            _editedProduct = Product(
+              productId: _editedProduct.productId,
               title: _editedProduct.title,
               description: _editedProduct.description,
               price: _editedProduct.price,
@@ -368,6 +346,32 @@ class _EditProductScreenState extends State<EditProductScreen> {
             );
           }
         },
+      ),
+    );
+  }
+
+	  Widget ImagePreview() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Layout.RADIUS / 2),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.30,
+        height: MediaQuery.of(context).size.width * 0.30,
+        child: _imageUrlController.text.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.all(Layout.SPACING / 4),
+                child: Center(
+                  child: Text(
+                    'Please enter\na valid URL',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            : FittedBox(
+                child: Image.network(
+                  _imageUrlController.text,
+                  fit: BoxFit.cover,
+                ),
+              ),
       ),
     );
   }

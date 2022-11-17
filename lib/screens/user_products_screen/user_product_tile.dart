@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/products.dart';
+import '../../providers/inventory.dart';
 import '../../styles/layout.dart';
 import 'edit_product_screen.dart';
 
@@ -26,14 +26,14 @@ class UserProductTile extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Layout.RADIUS),
         ),
-        tileColor: Theme.of(context).colorScheme.primaryContainer,
+        tileColor: Theme.of(context).colorScheme.secondaryContainer,
         leading: CircleAvatar(
           backgroundImage: NetworkImage(imageUrl),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
         ),
         trailing: FittedBox(
@@ -79,7 +79,7 @@ class UserProductTile extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-							Provider.of<Products>(context, listen: false).deleteProduct(productItemId);
+              Provider.of<Inventory>(context, listen: false).deleteProduct(productItemId);
             },
             child: Text('Yes'),
           ),

@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 
 import '../widgets/my_snack_bar.dart';
 
-class ProductItem with ChangeNotifier {
-  final String productItemId;
+class Product with ChangeNotifier {
+  final String productId;
   final String title;
   final String description;
   final String imageUrl;
@@ -15,8 +15,8 @@ class ProductItem with ChangeNotifier {
 
   bool isFavourite;
 
-  ProductItem({
-    required this.productItemId,
+  Product({
+    required this.productId,
     required this.title,
     required this.description,
     required this.imageUrl,
@@ -24,14 +24,18 @@ class ProductItem with ChangeNotifier {
     this.isFavourite = false,
   });
 
-  Future<void> toggleFavourite(BuildContext context) async {
-    final url = Uri.parse('https://shop-8727a-default-rtdb.firebaseio.com/products/$productItemId.json');
+  Future<void> toggleFavourite(context, authToken, userId) async {
+    final url = Uri.parse(
+        'https://shop-8727a-default-rtdb.firebaseio.com/user_favourites/$userId/$productId.json?auth=$authToken');
 
     isFavourite = !isFavourite;
     notifyListeners();
 
     try {
-      final response = await http.patch(url, body: json.encode({'is_favourite': isFavourite}));
+      final response = await http.put(
+        url,
+        body: json.encode(isFavourite),
+      );
       if (response.statusCode >= 400) {
         throw HttpException('Could not save favourite status');
       } else {

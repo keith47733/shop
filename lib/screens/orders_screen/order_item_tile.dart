@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../providers/order_item.dart';
+import '../../providers/order_product.dart';
 import '../../styles/layout.dart';
 
 class OrderItemTile extends StatefulWidget {
   final int index;
-  final OrderItem orderItem;
+  final OrderProduct orderItem;
 
   OrderItemTile({
     required this.index,
@@ -22,7 +22,7 @@ class _OrderItemTileState extends State<OrderItemTile> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
-        bottom: Layout.SPACING,
+        bottom: Layout.SPACING * 1.5,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(Layout.RADIUS),
@@ -30,10 +30,10 @@ class _OrderItemTileState extends State<OrderItemTile> {
           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           collapsedBackgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           leading: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             child: Text(
               '${(widget.index + 1)}',
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
             ),
           ),
           title: Text(
@@ -41,7 +41,7 @@ class _OrderItemTileState extends State<OrderItemTile> {
             style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
           ),
           subtitle: Text(
-            DateFormat('MMM d\, yyyy').format(widget.orderItem.orderDate),
+            DateFormat('MMM d\, yyyy  h:mm a').format(widget.orderItem.orderDate),
             style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
           ),
           children: [
@@ -61,9 +61,14 @@ class _OrderItemTileState extends State<OrderItemTile> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(product.title, style: Theme.of(context).textTheme.titleMedium),
-                            Text('${product.quantity} x \$${product.price}',
-                                style: Theme.of(context).textTheme.titleSmall),
+                            Expanded(
+                              child: Text(product.title, style: Theme.of(context).textTheme.titleMedium),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: Layout.SPACING),
+                              child: Text('${product.quantity} x \$${product.price}',
+                                  style: Theme.of(context).textTheme.titleSmall),
+                            ),
                           ],
                         ),
                       ),

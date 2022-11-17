@@ -2,7 +2,7 @@ import 'package:Shop/widgets/my_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/products.dart';
+import '../../providers/inventory.dart';
 import '../../styles/layout.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -11,7 +11,7 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productId = ModalRoute.of(context)!.settings.arguments as String;
-    final detailedProduct = Provider.of<Products>(context, listen: false).findProductById(productId);
+    final detailedProduct = Provider.of<Inventory>(context, listen: false).findProductById(productId);
 
     return Scaffold(
       appBar: MyAppBar('Product Detail', null, null),
@@ -56,7 +56,7 @@ class ProductDetailScreen extends StatelessWidget {
                 ),
                 SizedBox(height: Layout.SPACING),
                 Text(
-                  '\$${detailedProduct.price}',
+                  '\$${detailedProduct.price.toStringAsFixed(2)}',
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!

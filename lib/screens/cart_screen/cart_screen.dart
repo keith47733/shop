@@ -22,7 +22,7 @@ class CartScreen extends StatelessWidget {
       appBar: MyAppBar('Cart', Icon(Icons.shop), () => _appBarHandler(context)),
       drawer: MyAppDrawer('Cart'),
       body: Padding(
-        padding: EdgeInsets.all(Layout.SPACING),
+        padding: EdgeInsets.all(Layout.SPACING * 1.5),
         child: Column(
           children: [
             CartTotalTile(context, currentCart),
@@ -41,7 +41,7 @@ class CartScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Layout.RADIUS),
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.secondaryContainer,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -50,34 +50,26 @@ class CartScreen extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Text(
               'Total:',
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontFamily: 'Oswald',
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
             ),
-            Spacer(),
+            SizedBox(width: Layout.SPACING),
             Chip(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               label: Text(
                 '\$${currentCart.cartTotal.toStringAsFixed(2)}',
                 style:
-                    Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                    Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
               ),
             ),
-            SizedBox(width: Layout.SPACING),
-            currentCart.cartTotal > 0
-                ? OrderButton(currentCart: currentCart)
-                : Text(
-                    textAlign: TextAlign.center,
-                    'Your cart\nis Empty',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontFamily: 'Oswald',
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.normal,
-                        ),
-                  ),
+            Spacer(),
+            OrderButton(currentCart),
           ],
         ),
       ),
@@ -87,13 +79,13 @@ class CartScreen extends StatelessWidget {
   Widget CartItemTiles(context, currentCart) {
     return Expanded(
       child: ListView.builder(
-        itemCount: currentCart.cartItems.length,
+        itemCount: currentCart.cartDetails.length,
         itemBuilder: ((ctx, index) => CartItemTile(
-              cartItemId: currentCart.cartItems.values.toList()[index].cartItemId,
-              productItemId: currentCart.cartItems.keys.toList()[index],
-              title: currentCart.cartItems.values.toList()[index].title,
-              price: currentCart.cartItems.values.toList()[index].price,
-              quantity: currentCart.cartItems.values.toList()[index].quantity,
+              cartItemId: currentCart.cartDetails.values.toList()[index].cartProductId,
+              productItemId: currentCart.cartDetails.keys.toList()[index],
+              title: currentCart.cartDetails.values.toList()[index].title,
+              price: currentCart.cartDetails.values.toList()[index].price,
+              quantity: currentCart.cartDetails.values.toList()[index].quantity,
             )),
       ),
     );
@@ -101,11 +93,9 @@ class CartScreen extends StatelessWidget {
 }
 
 class OrderButton extends StatefulWidget {
-  final currentCart;
+  final Cart currentCart;
 
-  const OrderButton({
-    required this.currentCart,
-  });
+  OrderButton(this.currentCart);
 
   @override
   State<OrderButton> createState() => _OrderButtonState();
@@ -116,35 +106,41 @@ class _OrderButtonState extends State<OrderButton> {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        onPressed: (widget.currentCart.cartTotal <= 0 || isLoading == true)
-            // Flutter automatically disables a button if onPressed: is null.
-            ? null
-            : () async {
-                setState(() {
-                  isLoading = true;
-                });
-                await Provider.of<Orders>(context, listen: false).addOrder(
-                  cartProducts: widget.currentCart.cartItems.values.toList(),
-                  total: widget.currentCart.cartTotal,
-                );
-                setState(() {
-                  isLoading = false;
-                });
-                MySnackBar(context, 'Your order has been placed');
-                Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
-                widget.currentCart.clearCart();
-              },
-        child: !isLoading
-            ? Text(
-                textAlign: TextAlign.center,
-                'PLACE\nORDER',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontFamily: 'Oswald',
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-              )
-            : const Center(child: CircularProgressIndicator()));
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.onSecondaryContainer),
+      ),
+      onPressed: (widget.currentCart.cartTotal <= 0 || isLoading == true)
+          // Flutter automatically disables a button if onPressed: is null.
+          ? null
+          : () async {
+              setState(() {
+                isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                cartProducts: widget.currentCart.cartDetails.values.toList(),
+                total: widget.currentCart.cartTotal,
+              );
+              setState(() {
+                isLoading = false;
+              });
+              MySnackBar(context, 'Your order has been placed');
+              Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
+              widget.currentCart.clearCart();
+            },
+      child: Padding(
+          padding: const EdgeInsets.all(Layout.SPACING / 4),
+          child: !isLoading
+              ? Text(
+                  textAlign: TextAlign.center,
+                  (widget.currentCart.cartTotal > 0) ? 'PLACE\nORDER' : 'Your cart\nis Empty',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontFamily: 'Oswald',
+                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                )
+              : const Center(child: CircularProgressIndicator())),
+    );
   }
 }

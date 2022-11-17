@@ -19,7 +19,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Future? _ordersFuture;
 
   Future _obtainOrdersFuture() {
-    return Provider.of<Orders>(context, listen: false).fetchAllOrders();
+    return Provider.of<Orders>(context, listen: false).fetchOrders();
   }
 
   @override
@@ -99,20 +99,20 @@ Widget OrdersList(orders) {
   return SingleChildScrollView(
     child: Padding(
       padding: const EdgeInsets.only(
-        top: Layout.SPACING,
-        left: Layout.SPACING,
-        right: Layout.SPACING,
+        top: Layout.SPACING * 1.5,
+        left: Layout.SPACING * 1.5,
+        right: Layout.SPACING * 1.5,
       ),
       child: Column(
         children: [
           ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: orders.order.length,
+            itemCount: orders.orderDetails.length,
             itemBuilder: ((context, index) {
               return OrderItemTile(
                 index: index,
-                orderItem: orders.order[index],
+                orderItem: orders.orderDetails[index],
               );
             }),
           ),

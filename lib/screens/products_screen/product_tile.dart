@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/cart.dart';
-import '../../../providers/product_item.dart';
+import '../../providers/product.dart';
 import '../../../styles/layout.dart';
+import '../../providers/auth.dart';
 import '../product_detail_screen/product_detail_screen.dart';
 
 class ProductTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<ProductItem>(context, listen: false);
+    final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
 
     return ClipRRect(
@@ -19,7 +20,7 @@ class ProductTile extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pushNamed(
             ProductDetailScreen.routeName,
-            arguments: product.productItemId,
+            arguments: product.productId,
           );
         },
         child: GridTile(
@@ -43,7 +44,7 @@ class ProductTile extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Layout.RADIUS),
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.7),
           ),
           child: Padding(
             padding: const EdgeInsets.all(Layout.SPACING / 2),
@@ -61,11 +62,15 @@ class ProductTile extends StatelessWidget {
 
   Widget GridTileFooter(context, product, cart) {
     return GridTileBar(
-      backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
-      leading: Consumer<ProductItem>(
+      backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.7),
+      leading: Consumer<Product>(
         builder: (ctx, product, _) => IconButton(
           onPressed: () {
-						product.toggleFavourite(context);
+            product.toggleFavourite(
+              context,
+              Provider.of<Auth>(context, listen: false).token,
+              Provider.of<Auth>(context, listen: false).userId,
+            );
           },
           icon: product.isFavourite
               ? Icon(
@@ -88,7 +93,7 @@ class ProductTile extends StatelessWidget {
       ),
       trailing: IconButton(
         onPressed: () {
-          cart.addCartItem(product.productItemId, product.title, product.price);
+          cart.addCartItem(product.productId, product.title, product.price);
           MySnackBar(context, '${product.title} added to cart');
         },
         icon: Icon(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
 import '../screens/products_screen/products_screen.dart';
@@ -13,11 +15,11 @@ class MyAppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-			elevation: Layout.ELEVATION,
+      elevation: Layout.ELEVATION,
       child: Column(
         children: [
           AppBar(
-						elevation: Layout.ELEVATION,
+            elevation: Layout.ELEVATION,
             title: Text(
               'Bitches Be Shopping',
               style: TextStyle(fontFamily: 'Oswald'),
@@ -37,7 +39,7 @@ class MyAppDrawer extends StatelessWidget {
                   context: context,
                   handler: allProductsHandler,
                   icon: Icons.shop,
-                  title: 'All Products',
+                  title: 'Shop',
                 ),
                 MenuOption(
                   context: context,
@@ -49,7 +51,7 @@ class MyAppDrawer extends StatelessWidget {
                   context: context,
                   handler: yourProductsHandler,
                   icon: Icons.add_shopping_cart,
-                  title: 'Your Products',
+                  title: 'Manage Inventory',
                 ),
                 MenuOption(
                   context: context,
@@ -62,6 +64,12 @@ class MyAppDrawer extends StatelessWidget {
                   handler: ordersHandler,
                   icon: Icons.payment,
                   title: 'Orders',
+                ),
+                MenuOption(
+                  context: context,
+                  handler: logoutHandler,
+                  icon: Icons.logout,
+                  title: 'Logout',
                 ),
               ],
             ),
@@ -117,5 +125,13 @@ class MyAppDrawer extends StatelessWidget {
 
   void ordersHandler(context) {
     Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
+  }
+
+  void logoutHandler(context) {
+    // // Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+		Navigator.of(context).pop();
+		// Pushing the home screen ensures that the home: logic will always be executed when a user logs out, which of course will put him back on the AuthScreen but through main.dart.
+		Navigator.of(context).pushReplacementNamed('/');
+		Provider.of<Auth>(context, listen: false).logout();
   }
 }
