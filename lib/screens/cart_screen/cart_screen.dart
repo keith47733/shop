@@ -94,7 +94,6 @@ class CartScreen extends StatelessWidget {
 
 class OrderButton extends StatefulWidget {
   final Cart currentCart;
-
   OrderButton(this.currentCart);
 
   @override
@@ -111,7 +110,6 @@ class _OrderButtonState extends State<OrderButton> {
         side: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.onSecondaryContainer),
       ),
       onPressed: (widget.currentCart.cartTotal <= 0 || isLoading == true)
-          // Flutter automatically disables a button if onPressed: is null.
           ? null
           : () async {
               setState(() {
@@ -125,8 +123,8 @@ class _OrderButtonState extends State<OrderButton> {
                 isLoading = false;
               });
               MySnackBar(context, 'Your order has been placed');
-              Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
               widget.currentCart.clearCart();
+              Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
             },
       child: Padding(
           padding: const EdgeInsets.all(Layout.SPACING / 4),

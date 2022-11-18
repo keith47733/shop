@@ -1,8 +1,9 @@
+import 'package:Shop/widgets/show_error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/product.dart';
 import '../../providers/inventory.dart';
+import '../../providers/product.dart';
 import '../../styles/form_field_decoration.dart';
 import '../../styles/layout.dart';
 import '../../widgets/my_app_bar.dart';
@@ -19,12 +20,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
-
   TextEditingController _titleController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _imageUrlController = TextEditingController();
-
   FocusNode _imageUrlFocusNode = FocusNode();
 
   var _editedProduct = Product(
@@ -53,7 +52,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         _editedProduct = Provider.of<Inventory>(context, listen: false).findProductById(productItemId);
         _titleController.text = _editedProduct.title;
         _descriptionController.text = _editedProduct.description;
-        _priceController.text = _editedProduct.price.toString();
+        _priceController.text = _editedProduct.price.toStringAsFixed(2);
         _imageUrlController.text = _editedProduct.imageUrl;
       }
     }
@@ -67,18 +66,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _priceController.dispose();
     _descriptionController.dispose();
     _imageUrlController.dispose();
-
     _imageUrlFocusNode.removeListener(_updateImageUrl);
     _imageUrlFocusNode.dispose();
   }
 
   void _updateImageUrl() {
-    final value = _imageUrlController.text;
+    final tempImageUrl = _imageUrlController.text;
     if (!_imageUrlFocusNode.hasFocus) {
-      if (value.trim().isEmpty) {
+      if (tempImageUrl.trim().isEmpty) {
         return;
       }
-      if (!value.startsWith('http') || !value.startsWith('https')) {
+      if (!tempImageUrl.startsWith('http') || !tempImageUrl.startsWith('https')) {
         return;
       }
       setState(() {});
@@ -87,7 +85,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Future<void> _saveForm() async {
     FocusScope.of(context).unfocus();
-    await Future.delayed(Duration(milliseconds: 500));
 
     if (_formKey.currentState == null) {
       return;
@@ -108,21 +105,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         await Provider.of<Inventory>(context, listen: false).addProduct(_editedProduct);
       } catch (error) {
         isError = true;
-        await showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('Error'),
-            content: Text("Something went wrong"),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-                child: Text('Okay'),
-              ),
-            ],
-          ),
-        );
+				showErrorDialog(context, 'Ooops', 'Something went wrong');
       } finally {
         setState(() {
           _isLoading = false;
@@ -144,24 +127,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final formFieldDecoration = InputDecoration(
-    //   floatingLabelBehavior: FloatingLabelBehavior.always,
-    //   labelStyle: Theme.of(context).textTheme.titleLarge,
-    //   errorStyle: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.error),
-    //   enabledBorder: OutlineInputBorder(
-    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.onBackground, width: Layout.BORDER_WIDTH),
-    //   ),
-    //   focusedBorder: OutlineInputBorder(
-    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: Layout.BORDER_WIDTH),
-    //   ),
-    //   errorBorder: OutlineInputBorder(
-    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: Layout.BORDER_WIDTH),
-    //   ),
-    //   focusedErrorBorder: OutlineInputBorder(
-    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: Layout.BORDER_WIDTH),
-    //   ),
-    // );
-
     return Scaffold(
       appBar: _editedProduct.productId == 'add'
           ? MyAppBar('Add Product', Icon(Icons.save), _saveForm)
@@ -206,7 +171,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     return TextFormField(
       autofocus: true,
 			decoration: formFieldDecoration(context).copyWith(labelText: 'Title'),
-      // decoration: formFieldDecoration.copyWith(labelText: 'Title'),
       keyboardType: TextInputType.text,
       controller: _titleController,
       textInputAction: TextInputAction.next,
@@ -240,7 +204,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget DescriptionFormField() {
     return TextFormField(
       decoration: formFieldDecoration(context).copyWith(labelText: 'Description'),
-			// decoration: formFieldDecoration.copyWith(labelText: 'Description'),
       keyboardType: TextInputType.multiline,
       maxLines: 3,
       controller: _descriptionController,
@@ -275,7 +238,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget PriceFormField() {
     return TextFormField(
       decoration: formFieldDecoration(context).copyWith(labelText: 'Price'),
-			// decoration: formFieldDecoration.copyWith(labelText: 'Price'),
       keyboardType: TextInputType.number,
       controller: _priceController,
       textInputAction: TextInputAction.next,
@@ -313,7 +275,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     return Expanded(
       child: TextFormField(
         decoration: formFieldDecoration(context).copyWith(labelText: 'Image Url'),
-				// decoration: formFieldDecoration.copyWith(labelText: 'Image URL'),
         keyboardType: TextInputType.url,
         controller: _imageUrlController,
         focusNode: _imageUrlFocusNode,

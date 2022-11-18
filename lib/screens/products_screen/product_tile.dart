@@ -1,11 +1,11 @@
-import 'package:Shop/widgets/my_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/cart.dart';
-import '../../providers/product.dart';
 import '../../../styles/layout.dart';
 import '../../providers/auth.dart';
+import '../../providers/product.dart';
+import '../../widgets/my_snack_bar.dart';
 import '../product_detail_screen/product_detail_screen.dart';
 
 class ProductTile extends StatelessWidget {
@@ -25,9 +25,15 @@ class ProductTile extends StatelessWidget {
         },
         child: GridTile(
           header: GridTileHeader(context, product),
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          // The Hero animation is used between two different screens. It requries a unique tag that can be anything. The productId is ideal in this situation.
+          child: Hero(
+            tag: product.productId,
+            // The FadeInImage animation will show the placeholder: and crossfade it with the image:  In this case an AssetImage to a NetworkImage once loaded.
+            child: FadeInImage(
+              placeholder: AssetImage('assets/images/product_placeholder.png'),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.scaleDown,
+            ),
           ),
           footer: GridTileFooter(context, product, cart),
         ),
@@ -68,8 +74,8 @@ class ProductTile extends StatelessWidget {
           onPressed: () {
             product.toggleFavourite(
               context,
-              Provider.of<Auth>(context, listen: false).token,
-              Provider.of<Auth>(context, listen: false).userId,
+              Provider.of<Auth>(context, listen: false).getAuthToken,
+              Provider.of<Auth>(context, listen: false).getUserId,
             );
           },
           icon: product.isFavourite

@@ -1,3 +1,4 @@
+import 'package:Shop/widgets/show_confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -61,30 +62,14 @@ class UserProductTile extends StatelessWidget {
   }
 
   void _deleteProduct(context, productItemId) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: Text('Remove Product'),
-        content: Text('Are you sure you want to remove $title?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-            child: Text(
-              'No',
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Provider.of<Inventory>(context, listen: false).deleteProduct(productItemId);
-            },
-            child: Text('Yes'),
-          ),
-        ],
-      ),
+    final confirmDelete = await showConfirmDialog(
+      context,
+      'Remove product',
+      'Are you sure you want to remove $title from your inventory?',
     );
+    if (confirmDelete!) {
+      // Navigator.of(context).pop();
+      Provider.of<Inventory>(context, listen: false).deleteProduct(productItemId);
+    }
   }
 }

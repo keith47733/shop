@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-void showErrorDialog(context, message) {
+void showErrorDialog(context, title, content) {
   showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
         return AlertDialog(
-          title: Text('An error has occurred'),
-          content: Text(message),
+          title: Text(title),
+          content: Text(content),
           actions: <Widget>[
             TextButton(
               onPressed: () {

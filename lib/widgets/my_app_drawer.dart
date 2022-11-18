@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../helpers/custom_route.dart';
 import '../providers/auth.dart';
 import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
@@ -35,9 +36,10 @@ class MyAppDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+								Text('USER: ${Provider.of<Auth>(context, listen: false).getUserId}'),
                 MenuOption(
                   context: context,
-                  handler: allProductsHandler,
+                  handler: shopHandler,
                   icon: Icons.shop,
                   title: 'Shop',
                 ),
@@ -105,7 +107,7 @@ class MyAppDrawer extends StatelessWidget {
     );
   }
 
-  void allProductsHandler(context) {
+  void shopHandler(context) {
     Layout.showFavourites = false;
     Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
   }
@@ -128,10 +130,8 @@ class MyAppDrawer extends StatelessWidget {
   }
 
   void logoutHandler(context) {
-    // // Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
-		Navigator.of(context).pop();
-		// Pushing the home screen ensures that the home: logic will always be executed when a user logs out, which of course will put him back on the AuthScreen but through main.dart.
-		Navigator.of(context).pushReplacementNamed('/');
-		Provider.of<Auth>(context, listen: false).logout();
+    Navigator.of(context).pop();
+    Provider.of<Auth>(context, listen: false).logout();
+    Navigator.of(context).pushReplacementNamed('/');
   }
 }

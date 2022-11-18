@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:Shop/models/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/http_exception.dart';
 import '../widgets/my_snack_bar.dart';
 
 class Product with ChangeNotifier {

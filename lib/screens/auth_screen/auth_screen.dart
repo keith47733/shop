@@ -19,7 +19,7 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
+    // final deviceSize = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -34,23 +34,20 @@ class AuthScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(Layout.RADIUS),
                   ),
-                  child: Container(
-                    // height: deviceSize.height - Layout.SPACING * 6,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-											crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Stack(
-                          alignment: AlignmentDirectional.bottomCenter,
-                          children: [
-                            titleImage(context),
-                            titleBanner(context),
-                          ],
-                        ),
-                        AuthForm(),
-                      ],
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Stack(
+                        alignment: AlignmentDirectional.bottomCenter,
+                        children: [
+                          titleImage(context),
+                          titleBanner(context),
+                        ],
+                      ),
+                      AuthForm(),
+                    ],
                   ),
                 ),
               ),
@@ -99,19 +96,10 @@ Widget titleBanner(context) {
       vertical: Layout.SPACING * 0.75,
       horizontal: Layout.SPACING * 1.5,
     ),
-    // z-axis is from your eyes through your device.
-    // translate() offsets the object. If you add .translate(), the statement returns the type of the last method. In this case, .translate() returns void (ie, it does something but doesn't return anything). The ..translate() still applies the translate() method but returns what the previous method returns (ie, what rotationZ() returns).
     transform: Matrix4.rotationZ(-8 * pi / 180)..translate(-10.0),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(Layout.RADIUS * 3),
       color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
-      // boxShadow: [
-      //   BoxShadow(
-      //     blurRadius: 4,
-      //     color: Theme.of(context).colorScheme.shadow.withOpacity(0.5),
-      //     offset: Offset(4, 4),
-      //   )
-      // ],
     ),
     child: FittedBox(
       child: Text(
@@ -132,11 +120,66 @@ class AuthForm extends StatefulWidget {
   _AuthFormState createState() => _AuthFormState();
 }
 
-class _AuthFormState extends State<AuthForm> {
+class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  // *** Because I deviated from how the AuthScreen() is built/looks, this animation demo just animates the height: of the SizedBox when switching between Login/Signup. In the course, this animated between the card's fixed height for each state.
+  // This is to set up a completely manual animation. First need an AnimationController class. Also need an Animation object, but need to tell Dart what Object we want to animate. Both Animation classes should be configured when the State object is intitalized (ie, in initState()).
+  AnimationController? _animationController;
+  Animation<Size>? _heightAnimation;
+  Animation<Offset>? _slideAnimation;
+  Animation<double>? _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    // An AnimationController class requries two values (1) vsync: gives the AnimationController a pointer to a widget that is animated only when that widget is visible to the user on the screen. Typically this will point to the State object 'this'. This requires a SingleTickerProviderStateMixin which adds methods/properties to allow us to determine if the animatino object is visible and also when a frame update is due so we can play the animatino smoothly. The AnimationController class also requries (2) duration: which tells Flutter how long the animation cycle should take.
+    // The AnimationController is of type double, but you have to watch your null safety.
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 400),
+    );
+    // The generic Animation<> class is set to a generic Tween<>() class which knows how to interpolate values between two frames. Tween<Size> takes a begin: Size(width, height) and end: Size(width, height) with the .animate() method that takes a parent: which is what it controls via the AnimationController and a curve which controls how the animation is applied over time.
+    _heightAnimation = Tween<Size>(
+      begin: Size(double.infinity, 0),
+      end: Size(double.infinity, Layout.SPACING),
+    ).animate(CurvedAnimation(
+      parent: _animationController!,
+      curve: Curves.easeInOut,
+    ));
+    // Finally, we need to add a listener to the _heightAnimation. Thus any time the state of the Animation changes, it will redraw the screen.
+    // // _heightAnimation!.addListener(() => setState(() {}));
+    // Instead of managing the animation with a listener() and calling setState(), we can use the built-in AnimatedBuilder() widget.
+    _opacityAnimation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController!,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _slideAnimation = Tween<Offset>(
+      // The begin: and end: offsets are relative to where its final position will normally be.
+      begin: Offset(0, -0.5),
+      end: Offset(0, 0),
+    ).animate(CurvedAnimation(
+      parent: _animationController!,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _animationController!.dispose();
+  }
 
   AuthMode _authMode = AuthMode.Login;
 
@@ -157,8 +200,8 @@ class _AuthFormState extends State<AuthForm> {
     }
 
     _formKey.currentState!.save();
-    
-		setState(() {
+
+    setState(() {
       _isLoading = true;
     });
 
@@ -170,19 +213,14 @@ class _AuthFormState extends State<AuthForm> {
           _authData['email']!,
           _authData['password']!,
         );
-        // This Navigator would work if the app was to start with signup/login screen everytime. But we want to check if the device user is currently with a token stored on their device.
-        // // Navigator.of(context).pushReplacementNamed('/products_screen');
       } else {
         await Provider.of<Auth>(context, listen: false).signup(
           _authData['email']!,
           _authData['password']!,
         );
       }
-      // 'on HttpException' catches an error thrown by the HttpException class.
     } on HttpException catch (httpError) {
-      // An HttpException is only thrown in signup/login if the http.post() Json response contains an ['error'] key. We passed the value of the ['error']['message'] key, which we capture here as httpError object. The httpException class has an @override to convert and return the error as a String.
       final error = httpError.toString();
-
       if (error.contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use by another account.';
       } else if (error.contains('TOO_MANY_ATTEMPTS_TRY_LATER')) {
@@ -198,11 +236,18 @@ class _AuthFormState extends State<AuthForm> {
       } else {
         errorMessage = 'Authentication failed.';
       }
-      showErrorDialog(context, errorMessage);
+      showErrorDialog(
+        context,
+        'Oops, an error has occurred',
+        errorMessage,
+      );
     } catch (error) {
-      // This will catch all other errors (eg, no internet, socket error, etc).
       errorMessage = 'Could not authenticate you. Please try again later.';
-      showErrorDialog(context, errorMessage);
+      showErrorDialog(
+        context,
+        'Server error',
+        errorMessage,
+      );
     }
 
     setState(() {
@@ -211,23 +256,18 @@ class _AuthFormState extends State<AuthForm> {
   }
 
   void _switchAuthMode() {
+    // We initiate the animation whenever we swtich the AuthMode with the animationController .forward() or .reverse().
     if (_authMode == AuthMode.Login) {
       setState(() {
         _authMode = AuthMode.Signup;
       });
+      _animationController!.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
+      _animationController!.reverse();
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
   }
 
   @override
@@ -235,7 +275,7 @@ class _AuthFormState extends State<AuthForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.only(
+        padding: EdgeInsets.only(
           top: Layout.SPACING * 1.5,
           bottom: Layout.SPACING * 0.5,
           left: Layout.SPACING * 1.5,
@@ -247,8 +287,19 @@ class _AuthFormState extends State<AuthForm> {
             SizedBox(height: Layout.SPACING),
             passwordFormField(),
             SizedBox(height: Layout.SPACING),
-            if (_authMode == AuthMode.Signup) confirmPasswordFormField(),
+            // // if (_authMode == AuthMode.Signup) confirmPasswordFormField(_authMode),
+            confirmPasswordFormField(_authMode),
             if (_authMode == AuthMode.Signup) SizedBox(height: Layout.SPACING),
+            // The AnimatedBuilder will use the animation and controller but only rebuild the widget(s) wrapped in it (like a Consumer) rather than using a listener()/setState to rebuild the entire widget tree.
+            // Like the listener/setState, the height: needs to be tied to the animation.
+            // AnimatedBuilder(
+            //   animation: _heightAnimation!,
+            //   // The builder provides a context and child. The child is the portion of widget tree that IS animated. The rest of the widget tree is a child: of the AnimatedBuilder widget (not the builder:). In this modified case, I'm only animated the SizedBox height: which has no nested widgets.
+            //   builder: (ctx, _) => SizedBox(
+            //     height: _heightAnimation!.value.height,
+            //   ),
+            // ),
+            // The AnimatedContainer replaces the Container widget and automatically detects changes in height, width, margins, padding, etc and do all the heavy lifting to animate between two different states defined by, for example, a ternary operator. You don't need AnimationController or Controller. I don't use a Container in my UI.
             if (_isLoading) CircularProgressIndicator() else signupLoginButton(),
             switchAuthModeButton(),
           ],
@@ -262,7 +313,6 @@ class _AuthFormState extends State<AuthForm> {
       decoration: formFieldDecoration(context).copyWith(
         labelText: 'Email address',
       ),
-      // decoration: InputDecoration(labelText: 'E-Mail'),
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
@@ -288,7 +338,6 @@ class _AuthFormState extends State<AuthForm> {
       decoration: formFieldDecoration(context).copyWith(
         labelText: 'Password',
       ),
-      // decoration: InputDecoration(labelText: 'Password'),
       obscureText: true,
       controller: _passwordController,
       keyboardType: TextInputType.visiblePassword,
@@ -310,27 +359,39 @@ class _AuthFormState extends State<AuthForm> {
     );
   }
 
-  Widget confirmPasswordFormField() {
-    return TextFormField(
-      enabled: _authMode == AuthMode.Signup,
-      decoration: formFieldDecoration(context).copyWith(
-        // filled: true,
-        // fillColor: Theme.of(context).colorScheme.background,
-        labelText: 'Confirm password',
+  Widget confirmPasswordFormField(_authMode) {
+    // The FadeTransition uses opacity: controlled dynamically by an AnimationController and Animation<>. FadeTransition does all the heavy lifting of setting up a listener/setState. We can use _animationController defined above if we're happy with the duration. But we need an Animation<Opacity>, which is simply an Animation<double>, to dynamically control the opacity. We still need to trigger the animation in forward/reverse in _switchAuthMode above.
+    // Now we can remove the ternary operator to determine if the form field is shown and wrap the FadeTransition in a AnimatedContainer whose height changes depending on AuthMode.
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 400),
+      constraints: BoxConstraints(
+        // minHeight: _authMode == AuthMode.Signup ? 60 : 0,
+        maxHeight: _authMode == AuthMode.Signup ? 120 : 0,
       ),
-      // decoration: InputDecoration(labelText: 'Confirm password'),
-      obscureText: true,
-      controller: _confirmPasswordController,
-      keyboardType: TextInputType.visiblePassword,
-      textInputAction: TextInputAction.done,
-      validator: _authMode == AuthMode.Signup
-          ? (value) {
-              if (value != _passwordController.text) {
-                return 'Passwords do not match!';
-              }
-              return null;
-            }
-          : null,
+      child: FadeTransition(
+        opacity: _opacityAnimation!,
+        child: SlideTransition(
+          position: _slideAnimation!,
+          child: TextFormField(
+            enabled: _authMode == AuthMode.Signup,
+            decoration: formFieldDecoration(context).copyWith(
+              labelText: 'Confirm password',
+            ),
+            obscureText: true,
+            controller: _confirmPasswordController,
+            keyboardType: TextInputType.visiblePassword,
+            textInputAction: TextInputAction.done,
+            validator: _authMode == AuthMode.Signup
+                ? (value) {
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match!';
+                    }
+                    return null;
+                  }
+                : null,
+          ),
+        ),
+      ),
     );
   }
 

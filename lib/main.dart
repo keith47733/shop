@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'providers/auth.dart';
 import 'providers/cart.dart';
-import 'providers/orders.dart';
 import 'providers/inventory.dart';
+import 'providers/orders.dart';
 import 'screens/auth_screen/auth_screen.dart';
 import 'screens/cart_screen/cart_screen.dart';
 import 'screens/orders_screen/orders_screen.dart';
@@ -32,36 +32,30 @@ class MyApp extends StatelessWidget {
         ColorScheme? darkColorScheme,
       ) {
         return MultiProvider(
-          // Create a Provider tree.
           providers: [
             ChangeNotifierProvider(create: (ctx) => Auth()),
-            // You can use a ChangeNotifierProxyProvider that relies on a previously defined ChangeNotifierProvider. Add the CNP you're relying on and CNP for the class you want to listen to <Auth, Products> and the update: argument when using a ProxyProvider. The CNPP returns a context, an Auth object, and the previous state of the Products object.
-            // ChangeNotifierProxyProvider<Auth, Products>(
-            //   create: (ctx) => Products(null, []),
-            //   update: (ctx, auth, previousProducts) =>
-            //       Products(auth.token!, previousProducts == null ? [] : previousProducts.allProducts),
-            // ),
-            // This seems like the bext approach - use the Auth Provider getter methods for the authToken and userId arguments.
-            ChangeNotifierProvider(
+            ChangeNotifierProxyProvider<Auth, Inventory>(
               create: (ctx) => Inventory(
-                Provider.of<Auth>(ctx, listen: false).token ?? '',
-                Provider.of<Auth>(ctx, listen: false).userId ?? '',
+                Provider.of<Auth>(ctx, listen: false).getAuthToken,
+                Provider.of<Auth>(ctx, listen: false).getUserId,
+              ),
+              update: (ctx, value, _) => Inventory(
+                Provider.of<Auth>(ctx, listen: false).getAuthToken,
+                Provider.of<Auth>(ctx, listen: false).getUserId,
               ),
             ),
-            ChangeNotifierProvider(
-              create: (ctx) => Cart(
-                Provider.of<Auth>(ctx, listen: false).token ?? '',
-                Provider.of<Auth>(ctx, listen: false).userId ?? '',
-              ),
-            ),
-            ChangeNotifierProvider(
+            ChangeNotifierProvider(create: (ctx) => Cart()),
+            ChangeNotifierProxyProvider<Auth, Orders>(
               create: (ctx) => Orders(
-                Provider.of<Auth>(ctx, listen: false).token ?? '',
-                Provider.of<Auth>(ctx, listen: false).userId ?? '',
+                Provider.of<Auth>(ctx, listen: false).getAuthToken ?? '',
+                Provider.of<Auth>(ctx, listen: false).getUserId ?? '',
+              ),
+              update: (ctx, value, _) => Orders(
+                Provider.of<Auth>(ctx, listen: false).getAuthToken ?? '',
+                Provider.of<Auth>(ctx, listen: false).getUserId ?? '',
               ),
             ),
           ],
-          // This will listen for any changes to the Auth object and return a sub context, instance of the Auth object, and a null child.
           child: Consumer<Auth>(
             builder: (ctx, auth, _) => MaterialApp(
               debugShowCheckedModeBanner: false,
@@ -74,10 +68,6 @@ class MyApp extends StatelessWidget {
               //       ),
               // ),
               darkTheme: AppTheme.darkTheme(darkColorScheme),
-              // Want to check if the user is authenticated and then direct them to signup/login screen or products screen by wrapping the MaterialApp in a Consumer.of<Auth>. Thus, any changes to Auth will rebuild the MaterialApp assuming Auth notifyListeners().
-              // The Auth.logout() sets the user info to null and notifyListeners(). The Consumer<Auth> above will hear the change and rebuild the MaterialApp, this time Auth.isAuth will be false and the user will be directed to the AuthScreen.
-              // This home: argument is checked everytime the user navigates to a different screen. So as it is now, the user's token will expire but the user will only be logged out (taken to the AuthScreen) when the user changes screens. We want to logout the user immediatley. So we just need a way to trigger tryAutoLogin automatically.
-              // If auth.isAuth = true, we know the user is logged in and can continue to ProductScreen(). If auth.isAuth = false, the app may have been closed and re-opened within the token expiry data so we can try to automatically login with a FutureBuilder (which returns the function value as .data in a Future object snapshot which also includes await properties like ConnectionState).
               home: auth.isAuth
                   ? ProductsScreen()
                   : FutureBuilder(
@@ -85,7 +75,6 @@ class MyApp extends StatelessWidget {
                       builder: (ctx, authSnapshot) =>
                           authSnapshot.connectionState == ConnectionState.waiting ? SplashScreen() : AuthScreen(),
                     ),
-
               routes: {
                 AuthScreen.routeName: (ctx) => AuthScreen(),
                 ProductsScreen.routeName: (ctx) => ProductsScreen(),

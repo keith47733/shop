@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'cart_product.dart';
 
 class Cart with ChangeNotifier {
-  String authToken;
-  String userId;
-  Cart(this.authToken, this.userId);
-
   Map<String, CartProduct> _cartDetails = {};
   Map<String, CartProduct> get cartDetails {
     return {..._cartDetails};

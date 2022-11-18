@@ -1,10 +1,10 @@
-import 'package:Shop/widgets/my_snack_bar.dart';
-import 'package:Shop/widgets/show_confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/cart.dart';
 import '../../../styles/layout.dart';
+import '../../widgets/my_snack_bar.dart';
+import '../../widgets/show_confirm_dialog.dart';
 
 class CartItemTile extends StatelessWidget {
   final String cartItemId;
@@ -39,32 +39,8 @@ class CartItemTile extends StatelessWidget {
           return showConfirmDialog(
             context,
             'Remove Product',
-            'Are you sure you want to remove this product from your cart?',
+            'Are you sure you want to remove $title from your cart?',
           );
-          // return showDialog(
-          //   context: context,
-          //   barrierDismissible: false,
-          //   builder: (ctx) => AlertDialog(
-          //     title: Text('Remove Product'),
-          //     content: Text('Are you sure you want to remove this product from your cart?'),
-          //     actions: <Widget>[
-          //       TextButton(
-          //         onPressed: () {
-          //           Navigator.of(ctx).pop(false);
-          //         },
-          //         child: Text(
-          //           'No',
-          //         ),
-          //       ),
-          //       TextButton(
-          //         onPressed: () {
-          //           Navigator.of(ctx).pop(true);
-          //         },
-          //         child: Text('Yes'),
-          //       ),
-          //     ],
-          //   ),
-          // );
         },
         onDismissed: (direction) {
           Provider.of<Cart>(context, listen: false).removeProduct(productItemId);
