@@ -122,14 +122,17 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+
+
 
   // *** Because I deviated from how the AuthScreen() is built/looks, this animation demo just animates the height: of the SizedBox when switching between Login/Signup. In the course, this animated between the card's fixed height for each state.
   // This is to set up a completely manual animation. First need an AnimationController class. Also need an Animation object, but need to tell Dart what Object we want to animate. Both Animation classes should be configured when the State object is intitalized (ie, in initState()).
   AnimationController? _animationController;
-  Animation<Size>? _heightAnimation;
+  // Animation<Size>? _heightAnimation;
   Animation<Offset>? _slideAnimation;
   Animation<double>? _opacityAnimation;
 
@@ -143,13 +146,13 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
       duration: Duration(milliseconds: 400),
     );
     // The generic Animation<> class is set to a generic Tween<>() class which knows how to interpolate values between two frames. Tween<Size> takes a begin: Size(width, height) and end: Size(width, height) with the .animate() method that takes a parent: which is what it controls via the AnimationController and a curve which controls how the animation is applied over time.
-    _heightAnimation = Tween<Size>(
-      begin: Size(double.infinity, 0),
-      end: Size(double.infinity, Layout.SPACING),
-    ).animate(CurvedAnimation(
-      parent: _animationController!,
-      curve: Curves.easeInOut,
-    ));
+    // _heightAnimation = Tween<Size>(
+    //   begin: Size(double.infinity, 0),
+    //   end: Size(double.infinity, Layout.SPACING),
+    // ).animate(CurvedAnimation(
+    //   parent: _animationController!,
+    //   curve: Curves.easeInOut,
+    // ));
     // Finally, we need to add a listener to the _heightAnimation. Thus any time the state of the Animation changes, it will redraw the screen.
     // // _heightAnimation!.addListener(() => setState(() {}));
     // Instead of managing the animation with a listener() and calling setState(), we can use the built-in AnimatedBuilder() widget.
@@ -170,6 +173,8 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
       parent: _animationController!,
       curve: Curves.easeInOut,
     ));
+			_emailController.text = 'a@a.com';
+			_passwordController.text = '123456';
   }
 
   @override

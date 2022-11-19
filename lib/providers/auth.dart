@@ -14,6 +14,7 @@ class Auth with ChangeNotifier {
   Timer? _authTimer;
 
   bool get isAuth {
+    print('IS USER SESSION ACTIVE?');
     if (getAuthToken == null) {
       return false;
     }
@@ -21,6 +22,7 @@ class Auth with ChangeNotifier {
   }
 
   String? get getUserId {
+    print('GETTING AUTH TOKEN');
     if (_authToken == null) {
       return null;
     }
@@ -34,22 +36,42 @@ class Auth with ChangeNotifier {
   }
 
   String? get getAuthToken {
+    print('GETTING AUTH TOKEN');
     if (_authToken == null) {
+      print('..AUTH TOKEN IS NULL');
       return null;
     }
     if (_authTokenExpiryDate == null) {
+      print('.. AUTH TOKEN EXPIRY DATE NULL');
       return null;
     }
     if (_authTokenExpiryDate!.isBefore(DateTime.now())) {
+      print('..AUTH TOKEN EXPIRY BEFORE NOW');
       return null;
     }
     return _authToken;
   }
 
+  DateTime? get getAuthTokenExpiryDate {
+    print('GETTING AUTH TOKEN EXPIRY DATE');
+    if (_authToken == null) {
+      print('..AUTH TOKEN IS NULL');
+      return null;
+    }
+    if (_authTokenExpiryDate == null) {
+      print('.. AUTH TOKEN EXPIRY DATE NULL');
+      return null;
+    }
+    if (_authTokenExpiryDate!.isBefore(DateTime.now())) {
+      print('..AUTH TOKEN EXPIRY BEFORE NOW');
+      return null;
+    }
+    return _authTokenExpiryDate;
+  }
+
   Future<void> _authenticate(String email, String password, String urlSegment) async {
     final url = Uri.parse(
         'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyDwFQzdOV3eeG28swcTykqyu77lsh3x3xo');
-    print(url);
 
     String urlBody = json.encode({
       'email': email,
@@ -77,9 +99,12 @@ class Auth with ChangeNotifier {
         throw HttpException(responseData['error']['message']);
       }
       _userId = responseData['localId'];
-      print('TO WRITE TO USER PREFS: USER ID: $_userId');
+      print('SET AUTH VARIABLES: USERID: $_userId');
       _authToken = responseData['idToken'];
+      print('SET AUTH VARIABLES: TOKEN: $_authToken');
       _authTokenExpiryDate = DateTime.now().add(Duration(seconds: int.parse(responseData['expiresIn'])));
+      print('SET AUTH VARIABLES: TOKEN EXPIRY: $_authTokenExpiryDate');
+
       _resetAutoLogoutTimer();
 
       final prefs = await SharedPreferences.getInstance();
@@ -88,7 +113,7 @@ class Auth with ChangeNotifier {
         'token': _authToken,
         'token_expiry_date': _authTokenExpiryDate!.toIso8601String(),
       });
-      print(userSessionData);
+      print('WRITING SESSION DATA: ${userSessionData}');
       prefs.setString('user_session_data', userSessionData);
       notifyListeners();
     } catch (error) {
@@ -101,8 +126,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    print('LOGIN EMAIL: $email');
-    print('LOGIN EMAIL: $password');
+    print('LOGGING IN...');
     return _authenticate(email, password, 'signInWithPassword');
   }
 
@@ -114,10 +138,10 @@ class Auth with ChangeNotifier {
       _authTimer!.cancel();
       _authTimer = null;
     }
-		print ('LOGOUT: CLEARED USER DATA');
+    print('LOGOUT: CLEARED USER DATA');
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
-		print('LOGOUT: CLEARED SHARED PREFS');
+    print('LOGOUT: CLEARED SHARED PREFS');
     notifyListeners();
   }
 
@@ -126,26 +150,34 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('user_session_data')) {
       return false;
     }
-		print('PREFS CONTAIN USER_SESSION_DATA');
+    print('PREFS CONTAIN USER_SESSION_DATA');
 
     final decodedSessionData = json.decode(prefs.getString('user_session_data')!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(decodedSessionData['token_expiry_date']);
 
     if (expiryDate.isBefore(DateTime.now())) {
+      print('AUTO LOGIN: EXPIRY DATE BEFORE NOW');
       return false;
     }
 
     _userId = decodedSessionData['user_id'];
+    print('SESSION DATA USER ID: $_userId');
     _authToken = decodedSessionData['token'];
-    _authTokenExpiryDate = decodedSessionData['token_expiry_date'];
+    print('SESSION DATA TOKEN: ${_authToken!.substring(0,5)}');
+    _authTokenExpiryDate = DateTime.parse(decodedSessionData['token_expiry_date']);
+    print('SESSION DATA EXPIRY DATE: $_authTokenExpiryDate');
     _resetAutoLogoutTimer();
-    notifyListeners();
-		print('RESUMED SAVED SESSION');
+    print ('AUTO LOGIN *** DON"T NOTIFY LISTENERS');
+		// print('AUTO LOGIN RETREIVE SESSION DATA NOTIFYING LISTENERS');
+    // notifyListeners();
+
+    print('RESUMED SAVED SESSION');
 
     return true;
   }
 
   void _resetAutoLogoutTimer() {
+    print('RESETTING AUTH TIMER');
     if (_authTimer != null) {
       _authTimer!.cancel();
     }

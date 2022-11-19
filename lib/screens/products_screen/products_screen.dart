@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -115,9 +117,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
         vertical: Layout.SPACING * 2,
         horizontal: Layout.SPACING * 1.5,
       ),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 1,
-        childAspectRatio: 3 / 2,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: max(MediaQuery.of(context).size.width ~/ 400, 1),
+        childAspectRatio: 1,
+				// childAspectRatio: 3 / 2,
         crossAxisSpacing: Layout.SPACING * 2,
         mainAxisSpacing: Layout.SPACING * 2,
       ),

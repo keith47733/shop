@@ -7,9 +7,11 @@ import 'cart_product.dart';
 import 'order_product.dart';
 
 class Orders with ChangeNotifier {
-  String authToken;
-  String userId;
-  Orders(this.authToken, this.userId);
+	String? userId;
+  String? authToken;
+	DateTime? authTokenExpiryDate;
+
+  Orders(this.userId, this.authToken, this.authTokenExpiryDate);
 
   List<OrderProduct> _orderDetails = [];
   List<OrderProduct> get orderDetails {

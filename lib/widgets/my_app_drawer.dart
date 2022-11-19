@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../helpers/custom_route.dart';
 import '../providers/auth.dart';
 import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
@@ -17,26 +16,48 @@ class MyAppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       elevation: Layout.ELEVATION,
-      child: Column(
-        children: [
-          AppBar(
-            elevation: Layout.ELEVATION,
-            title: Text(
-              'Bitches Be Shopping',
-              style: TextStyle(fontFamily: 'Oswald'),
-            ),
-            automaticallyImplyLeading: false,
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: Layout.ELEVATION,
+          title: Text(
+            'Bitches Be Shopping',
+            style: TextStyle(fontFamily: 'Oswald'),
           ),
-          Padding(
+          automaticallyImplyLeading: false,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.symmetric(
               vertical: Layout.SPACING,
               horizontal: Layout.SPACING,
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-								Text('USER: ${Provider.of<Auth>(context, listen: false).getUserId}'),
+                SizedBox(height: Layout.SPACING),
+                Center(
+                  child: CircleAvatar(
+                    radius: Layout.SPACING * 3,
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    child: Image.asset('assets/images/user.png'),
+                  ),
+                ),
+                SizedBox(height: Layout.SPACING),
+                Center(
+                  child: Text(
+                    '[${Provider.of<Auth>(context, listen: false).getUserId}]',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                        ),
+                  ),
+                ),
+                SizedBox(height: Layout.SPACING),
+                Divider(
+                  thickness: 1.0,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 MenuOption(
                   context: context,
                   handler: shopHandler,
@@ -73,10 +94,24 @@ class MyAppDrawer extends StatelessWidget {
                   icon: Icons.logout,
                   title: 'Logout',
                 ),
+                Divider(
+                  thickness: 1.0,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                SizedBox(height: Layout.SPACING),
+                AboutListTile(
+                  applicationName: 'Bitches Be Shopping',
+                  applicationVersion: 'Version 1.1',
+                  applicationLegalese: 'Don\t forget to read the fine print bitch.',
+                  icon: Image.asset(
+                    // width: MediaQuery.of(context).size.width * 0.20,
+                    'assets/images/shopping.png',
+                  ),
+                ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

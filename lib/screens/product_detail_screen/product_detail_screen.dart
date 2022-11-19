@@ -1,4 +1,3 @@
-import 'package:Shop/widgets/my_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,52 +13,26 @@ class ProductDetailScreen extends StatelessWidget {
     final detailedProduct = Provider.of<Inventory>(context, listen: false).findProductById(productId);
 
     return Scaffold(
-      appBar: MyAppBar('Product Detail', null, null),
+      appBar: AppBar(title: Container(child: Text(detailedProduct.title, maxLines: 2,)),),
       body: ProductDetails(context, detailedProduct),
     );
   }
 
   Widget ProductDetails(context, detailedProduct) {
     return SingleChildScrollView(
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-          vertical: Layout.SPACING * 1.5,
-          horizontal: Layout.SPACING,
-        ),
-        padding: const EdgeInsets.symmetric(
-          vertical: Layout.SPACING * 1.5,
-          horizontal: Layout.SPACING,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(Layout.RADIUS),
-          color: Theme.of(context).colorScheme.secondary.withOpacity(0.6),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.all(Layout.SPACING * 1.5),
         child: Column(
           children: <Widget>[
-            Text(
-              textAlign: TextAlign.center,
-              detailedProduct.title.toString().toUpperCase(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: Layout.SPACING * 1.5,
-                horizontal: Layout.SPACING,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(Layout.RADIUS),
-                child: Hero(
-                  tag: detailedProduct.productId,
-                  child: Image.network(
-                    detailedProduct.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+            Hero(
+              tag: detailedProduct.productId,
+              child: Image.network(
+                detailedProduct.imageUrl,
+                height: MediaQuery.of(context).size.width * 0.80,
+                fit: BoxFit.cover,
               ),
             ),
+            SizedBox(height: Layout.SPACING),
             Text(
               '\$${detailedProduct.price.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -68,15 +41,12 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
             ),
             SizedBox(height: Layout.SPACING),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: Layout.SPACING),
-              child: Text(
-                detailedProduct.description,
-                style:
-                    Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onBackground),
-                textAlign: TextAlign.left,
-                softWrap: true,
-              ),
+            Text(
+              detailedProduct.description,
+              style:
+                  Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onBackground),
+              textAlign: TextAlign.left,
+              softWrap: true,
             ),
           ],
         ),

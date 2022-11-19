@@ -7,9 +7,12 @@ import '../models/http_exception.dart';
 import 'product.dart';
 
 class Inventory with ChangeNotifier {
+	String? userId;
   String? authToken;
-  String? userId;
-  Inventory(this.authToken, this.userId);
+	DateTime? authTokenExpiryDate;
+
+  Inventory(this.userId, this.authToken, this.authTokenExpiryDate);
+
 
   List<Product> _products = [];
   List<Product> get products {
@@ -71,6 +74,9 @@ class Inventory with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
+		    print('ADD PRODUCT USERID: $userId');
+
+
     final url = Uri.parse('https://shop-8727a-default-rtdb.firebaseio.com/products.json?auth=$authToken');
 
     try {
