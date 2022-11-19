@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
-import '../screens/cart_screen/cart_screen.dart';
 import '../screens/orders_screen/orders_screen.dart';
 import '../screens/products_screen/products_screen.dart';
 import '../screens/user_products_screen/user_products_screen.dart';
 import '../styles/layout.dart';
+import 'show_confirm_dialog.dart';
 
 class MyAppDrawer extends StatelessWidget {
   final String currentScreen;
@@ -47,7 +47,7 @@ class MyAppDrawer extends StatelessWidget {
                 SizedBox(height: Layout.SPACING),
                 Center(
                   child: Text(
-                    '[${Provider.of<Auth>(context, listen: false).getUserId}]',
+                    '[${Provider.of<Auth>(context, listen: false).getUid}]',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
                         ),
@@ -72,15 +72,9 @@ class MyAppDrawer extends StatelessWidget {
                 ),
                 MenuOption(
                   context: context,
-                  handler: yourProductsHandler,
+                  handler: manageInventoryHandler,
                   icon: Icons.add_shopping_cart,
                   title: 'Manage Inventory',
-                ),
-                MenuOption(
-                  context: context,
-                  handler: cartHandler,
-                  icon: Icons.shopping_cart,
-                  title: 'Cart',
                 ),
                 MenuOption(
                   context: context,
@@ -103,10 +97,7 @@ class MyAppDrawer extends StatelessWidget {
                   applicationName: 'Bitches Be Shopping',
                   applicationVersion: 'Version 1.1',
                   applicationLegalese: 'Don\t forget to read the fine print bitch.',
-                  icon: Image.asset(
-                    // width: MediaQuery.of(context).size.width * 0.20,
-                    'assets/images/shopping.png',
-                  ),
+                  icon: Image.asset('assets/images/shopping.png'),
                 ),
               ],
             ),
@@ -152,19 +143,19 @@ class MyAppDrawer extends StatelessWidget {
     Navigator.of(context).pushReplacementNamed(ProductsScreen.routeName);
   }
 
-  void yourProductsHandler(context) {
+  void manageInventoryHandler(context) {
     Navigator.of(context).pushReplacementNamed(UserProductsScreen.routeName);
-  }
-
-  void cartHandler(context) {
-    Navigator.of(context).pushReplacementNamed(CartScreen.routeName);
   }
 
   void ordersHandler(context) {
     Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
   }
 
-  void logoutHandler(context) {
+  void logoutHandler(context) async {
+    final logout = await showConfirmDialog(context, 'Logout', "Are you sure you want to logout?");
+    if (logout == false) {
+      return;
+    }
     Navigator.of(context).pop();
     Provider.of<Auth>(context, listen: false).logout();
     Navigator.of(context).pushReplacementNamed('/');

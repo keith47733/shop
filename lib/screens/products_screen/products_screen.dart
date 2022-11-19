@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/cart.dart';
 import '../../providers/inventory.dart';
 import '../../styles/layout.dart';
+import '../../widgets/error_message.dart';
+import '../../widgets/loading_spinner.dart';
+import '../../widgets/main_app_bar.dart';
 import '../../widgets/my_app_drawer.dart';
-import '../cart_screen/cart_screen.dart';
-import 'badge.dart';
 import 'product_tile.dart';
 
 enum Filter {
@@ -16,75 +16,37 @@ enum Filter {
   showAll,
 }
 
-class ProductsScreen extends StatefulWidget {
+class ProductsScreen extends StatelessWidget {
   static const routeName = '/products_screen';
 
-  @override
-  State<ProductsScreen> createState() => _ProductsScreenState();
-}
-
-class _ProductsScreenState extends State<ProductsScreen> {
-  bool _isInit = true;
-  bool _isLoading = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-      Provider.of<Inventory>(context, listen: false).fetchProducts(filterByUser: false).then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    }
-    _isInit = false;
+  Future<void> _fetchProducts(context) async {
+    await Provider.of<Inventory>(context, listen: false).fetchProducts(filterByUser: false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWithCartAndBadge(Layout.showFavourites),
+      appBar: MainAppBar(context, Layout.showFavourites ? 'Favourite Products' : 'Shop'),
       drawer: MyAppDrawer(Layout.showFavourites ? 'Favourite Products' : 'Shop'),
-      body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGridView(context, Layout.showFavourites),
-    );
-  }
-
-  PreferredSizeWidget AppBarWithCartAndBadge(showFavourites) {
-    return AppBar(
-      elevation: Layout.ELEVATION,
-      title: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          showFavourites ? 'Favourite Products' : 'Bitches Be Shopping',
-          style: TextStyle(fontFamily: 'Oswald'),
-        ),
+      body: FutureBuilder(
+        future: _fetchProducts(context),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return LoadingSpinner();
+          }
+          if (snapshot.error != null) {
+            return ErrorMessage(ctx);
+          }
+          return ProductsGridView(context, Layout.showFavourites);
+        },
       ),
-      actions: [
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(CartScreen.routeName);
-          },
-          child: Consumer<Cart>(
-            builder: ((_, cart, badgeChild) => Badge(
-                  child: badgeChild!,
-                  value: cart.numberOfCartItems.toString(),
-                )),
-            child: Padding(
-              padding: const EdgeInsets.only(right: Layout.SPACING),
-              child: Icon(Icons.shopping_cart),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
   Widget ProductsGridView(context, _showFavourites) {
-    final products =
-        _showFavourites ? Provider.of<Inventory>(context).favouriteProducts : Provider.of<Inventory>(context).products;
+    final products = Layout.showFavourites
+        ? Provider.of<Inventory>(context, listen: false).getFavouriteProducts
+        : Provider.of<Inventory>(context, listen: false).products;
 
     if (_showFavourites && products.isEmpty) {
       return Padding(
@@ -120,7 +82,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: max(MediaQuery.of(context).size.width ~/ 400, 1),
         childAspectRatio: 1,
-				// childAspectRatio: 3 / 2,
+        // childAspectRatio: 3 / 2,
         crossAxisSpacing: Layout.SPACING * 2,
         mainAxisSpacing: Layout.SPACING * 2,
       ),

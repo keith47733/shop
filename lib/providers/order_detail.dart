@@ -1,12 +1,12 @@
-import 'cart_product.dart';
+import 'cart_detail.dart';
 
-class OrderProduct {
+class OrderDetail {
   final String orderProductId;
   final DateTime orderDate;
-  final List<CartProduct> products;
+  final List<CartDetail> products;
   final double amount;
 
-  OrderProduct({
+  OrderDetail({
     required this.orderProductId,
     required this.orderDate,
     required this.products,

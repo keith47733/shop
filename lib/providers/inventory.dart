@@ -7,29 +7,26 @@ import '../models/http_exception.dart';
 import 'product.dart';
 
 class Inventory with ChangeNotifier {
-	String? userId;
+  String? userId;
   String? authToken;
-	DateTime? authTokenExpiryDate;
+  DateTime? authTokenExpiryDate;
 
   Inventory(this.userId, this.authToken, this.authTokenExpiryDate);
-
 
   List<Product> _products = [];
   List<Product> get products {
     return [..._products];
   }
 
-  List<Product> get favouriteProducts {
+  List<Product> get getFavouriteProducts {
     return _products.where((indexProduct) => indexProduct.isFavourite).toList();
   }
 
   Future<void> fetchProducts({required bool filterByUser}) async {
-    print('SEARCH BY USER ID: $filterByUser');
-    print('SEARCH BY USER ID: $userId');
     if (userId == null) {
       return;
     }
-		
+
     final queryString = filterByUser ? '&orderBy="created_by"&equalTo="$userId"' : '';
 
     final productsUrl =
@@ -40,32 +37,30 @@ class Inventory with ChangeNotifier {
 
     try {
       final productsResponse = await http.get(productsUrl);
-      print('GET PRODUCTS FROM SERVER: $productsResponse');
       if (productsResponse.body == 'null') {
-        print('INSIDE PRODUCTSRESPONSE == NULL');
         return;
       }
 
       final favouritesResponse = await http.get(favouritesUrl);
-      final favouritesData = json.decode(favouritesResponse.body);
+      final decodedFavouritesResponse = json.decode(favouritesResponse.body);
 
-      final List<Product> loadedProducts = [];
-      Map<String, dynamic> extractedData = json.decode(productsResponse.body);
+      final List<Product> fetchedProducts = [];
+      Map<String, dynamic> decodedProducts = json.decode(productsResponse.body);
 
-      extractedData.forEach((productId, productData) {
-        loadedProducts.add(Product(
+      decodedProducts.forEach((productId, productData) {
+        fetchedProducts.add(Product(
           productId: productId,
           title: productData['title'],
           description: productData['description'],
           price: productData['price'],
           imageUrl: productData['image_url'],
-          isFavourite: favouritesData == null ? false : favouritesData[productId] ?? false,
+          isFavourite: decodedFavouritesResponse == null ? false : decodedFavouritesResponse[productId] ?? false,
         ));
       });
-      _products = loadedProducts;
+      _products = fetchedProducts;
       notifyListeners();
     } catch (error) {
-      print('ERROR FETCHING PRODUCTS BY USER ID');
+      throw error;
     }
   }
 
@@ -74,11 +69,7 @@ class Inventory with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-		    print('ADD PRODUCT USERID: $userId');
-
-
     final url = Uri.parse('https://shop-8727a-default-rtdb.firebaseio.com/products.json?auth=$authToken');
-
     try {
       final response = await http.post(
         url,
@@ -92,6 +83,10 @@ class Inventory with ChangeNotifier {
           },
         ),
       );
+      final decodedResponse = json.decode(response.body);
+      if (decodedResponse['error'] != null) {
+        throw HttpException(decodedResponse['error']['message']);
+      }
       final newProduct = Product(
         productId: response.body,
         title: product.title,
@@ -108,39 +103,43 @@ class Inventory with ChangeNotifier {
   }
 
   Future<void> updateProduct(String editProductId, Product editProduct) async {
-    final productIndex = _products.indexWhere((product) => product.productId == editProductId);
-    if (productIndex >= 0) {
-      final url =
-          Uri.parse('https://shop-8727a-default-rtdb.firebaseio.com/products/$editProductId.json?auth=$authToken');
-      await http.patch(
-        url,
-        body: json.encode({
-          'title': editProduct.title,
-          'description': editProduct.description,
-          'price': editProduct.price,
-          'image_url': editProduct.imageUrl,
-        }),
-      );
-      _products[productIndex] = editProduct;
-      notifyListeners();
+    final exProductIndex = _products.indexWhere((product) => product.productId == editProductId);
+    if (exProductIndex >= 0) {
+      try {
+        final url =
+            Uri.parse('https://shop-8727a-default-rtdb.firebaseio.com/products/$editProductId.json?auth=$authToken');
+        final response = await http.patch(
+          url,
+          body: json.encode({
+            'title': editProduct.title,
+            'description': editProduct.description,
+            'price': editProduct.price,
+            'image_url': editProduct.imageUrl,
+          }),
+        );
+        if (response.statusCode >= 400) {
+          throw HttpException('Could not delete product');
+        }
+        _products[exProductIndex] = editProduct;
+        notifyListeners();
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
   Future<void> deleteProduct(String delProductId) async {
     final url = Uri.parse('https://shop-8727a-default-rtdb.firebaseio.com/products/$delProductId.json?auth=$authToken');
-
-    var existingProductIndex = _products.indexWhere((product) => product.productId == delProductId);
-    var existingProduct = _products[existingProductIndex];
-
-    _products.removeAt(existingProductIndex);
-    notifyListeners();
-
-    final response = await http.delete(url);
-    if (response.statusCode >= 400) {
-      _products.insert(existingProductIndex, existingProduct);
+    var exProductIndex = _products.indexWhere((product) => product.productId == delProductId);
+    try {
+      final response = await http.delete(url);
+      if (response.statusCode >= 400) {
+        throw HttpException('Could not delete product');
+      }
+      _products.removeAt(exProductIndex);
       notifyListeners();
-      throw HttpException('Could not delete product');
+    } catch (error) {
+      throw error;
     }
-    existingProduct.dispose();
   }
 }

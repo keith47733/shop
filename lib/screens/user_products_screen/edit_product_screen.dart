@@ -1,13 +1,14 @@
-import 'package:Shop/widgets/show_error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/http_exception.dart';
 import '../../providers/inventory.dart';
 import '../../providers/product.dart';
 import '../../styles/form_field_decoration.dart';
 import '../../styles/layout.dart';
-import '../../widgets/my_app_bar.dart';
 import '../../widgets/my_snack_bar.dart';
+import '../../widgets/show_error_dialog.dart';
+import '../../widgets/sub_appbar.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit_product_screen';
@@ -83,7 +84,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  Future<void> _saveForm() async {
+  void _saveForm() async {
     FocusScope.of(context).unfocus();
 
     if (_formKey.currentState == null) {
@@ -100,28 +101,37 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
 
     if (_editedProduct.productId == 'add') {
-      bool isError = false;
       try {
         await Provider.of<Inventory>(context, listen: false).addProduct(_editedProduct);
-      } catch (error) {
-        isError = true;
-				showErrorDialog(context, 'Ooops', 'Something went wrong');
-      } finally {
         setState(() {
           _isLoading = false;
         });
         Navigator.of(context).pop();
-        if (!isError) {
-          MySnackBar(context, '${_editedProduct.title} added to Your Products');
-        }
+        MySnackBar(context, '${_editedProduct.title} was added to Your Products');
+      } on HttpException catch (httpError) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, 'Authentication error', 'Unable to add product to your inventory. Please try again later.');
+      } catch (error) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, 'Server error', 'Unable to add product to your inventory. Please try again later.');
       }
-    } else {
-      await Provider.of<Inventory>(context, listen: false).updateProduct(_editedProduct.productId, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
-      MySnackBar(context, 'Updated ${_editedProduct.title}');
+    }
+
+    if (_editedProduct.productId != 'add') {
+      try {
+        await Provider.of<Inventory>(context, listen: false).updateProduct(_editedProduct.productId, _editedProduct);
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+        MySnackBar(context, 'Updated ${_editedProduct.title}');
+      } on HttpException catch (httpError) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, 'Authentication error', 'Unable to update ${_editedProduct.title}. Please try again later.');
+      } catch (error) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, 'Server error', 'Unable to update ${_editedProduct.title}. Please try again later.');
+      }
     }
   }
 
@@ -129,8 +139,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _editedProduct.productId == 'add'
-          ? MyAppBar('Add Product', Icon(Icons.save), _saveForm)
-          : MyAppBar('Edit Product', Icon(Icons.save), _saveForm),
+          ? SubAppbar('Add Product', Icon(Icons.save), _saveForm)
+          : SubAppbar('Edit Product', Icon(Icons.save), _saveForm),
       body: _isLoading ? Center(child: CircularProgressIndicator()) : BuildInputForm(context),
     );
   }
@@ -152,14 +162,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
               SizedBox(height: Layout.SPACING * 1.5),
               PriceFormField(),
               SizedBox(height: Layout.SPACING * 1.5),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  ImagePreview(),
-                  SizedBox(width: Layout.SPACING),
-                  ImageUrlFormField(),
-                ],
-              ),
+              ImagePreview(),
+              SizedBox(height: Layout.SPACING * 1.5),
+              ImageUrlFormField(),
             ],
           ),
         ),
@@ -170,7 +175,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget TitleFormField() {
     return TextFormField(
       autofocus: true,
-			decoration: formFieldDecoration(context).copyWith(labelText: 'Title'),
+      decoration: formFieldDecoration(context).copyWith(labelText: 'Title'),
       keyboardType: TextInputType.text,
       controller: _titleController,
       textInputAction: TextInputAction.next,
@@ -272,49 +277,43 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Widget ImageUrlFormField() {
-    return Expanded(
-      child: TextFormField(
-        decoration: formFieldDecoration(context).copyWith(labelText: 'Image Url'),
-        keyboardType: TextInputType.url,
-        controller: _imageUrlController,
-        focusNode: _imageUrlFocusNode,
-        onEditingComplete: () {
-          setState(() {});
-        },
-        textInputAction: TextInputAction.done,
-        validator: (value) {
-          if (value == null) {
-            return 'Please enter a URL for your product\'s image';
-          }
-          if (value.trim().isEmpty) {
-            return 'Please enter a URL for your product\'s image';
-          }
-          if (!value.startsWith('http') || !value.startsWith('https')) {
-            return 'Please enter a valid URL';
-          }
-          return null;
-        },
-        onFieldSubmitted: (_) => _saveForm(),
-        onSaved: (value) {
-          if (value != null) {
-            _editedProduct = Product(
-              productId: _editedProduct.productId,
-              title: _editedProduct.title,
-              description: _editedProduct.description,
-              price: _editedProduct.price,
-              imageUrl: value,
-              isFavourite: _editedProduct.isFavourite,
-            );
-          }
-        },
-      ),
+    return TextFormField(
+      decoration: formFieldDecoration(context).copyWith(labelText: 'Image Url'),
+      keyboardType: TextInputType.url,
+      controller: _imageUrlController,
+      focusNode: _imageUrlFocusNode,
+      textInputAction: TextInputAction.done,
+      validator: (value) {
+        if (value == null) {
+          return 'Please enter a URL for your product\'s image';
+        }
+        if (value.trim().isEmpty) {
+          return 'Please enter a URL for your product\'s image';
+        }
+        if (!value.startsWith('http') || !value.startsWith('https')) {
+          return 'Please enter a valid URL';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        if (value != null) {
+          _editedProduct = Product(
+            productId: _editedProduct.productId,
+            title: _editedProduct.title,
+            description: _editedProduct.description,
+            price: _editedProduct.price,
+            imageUrl: value,
+            isFavourite: _editedProduct.isFavourite,
+          );
+        }
+      },
     );
   }
 
-	  Widget ImagePreview() {
+  Widget ImagePreview() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(Layout.RADIUS / 2),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.30,
         height: MediaQuery.of(context).size.width * 0.30,
         child: _imageUrlController.text.isEmpty
@@ -327,12 +326,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                 ),
               )
-            : FittedBox(
-                child: Image.network(
-                  _imageUrlController.text,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            : Image.network(
+              _imageUrlController.text,
+              fit: BoxFit.cover,
+            ),
       ),
     );
   }

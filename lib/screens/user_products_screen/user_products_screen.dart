@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../providers/inventory.dart';
 import '../../styles/layout.dart';
-import '../../widgets/my_app_bar.dart';
+import '../../widgets/error_message.dart';
+import '../../widgets/loading_spinner.dart';
+import '../../widgets/main_app_bar.dart';
 import '../../widgets/my_app_drawer.dart';
 import 'edit_product_screen.dart';
 import 'user_product_tile.dart';
@@ -18,21 +20,36 @@ class UserProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar('Manage Inventory', Icon(Icons.note_add), () => _appBarHandler(context)),
+      appBar: MainAppBar(context, 'Manage Inventory'),
       drawer: MyAppDrawer('Manage Inventory'),
-      body: FutureBuilder(
-        future: _fetchInventory(context),
-        builder: ((ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          return BuildProductList(context);
-        }),
+      bottomNavigationBar: BottomAppBar(
+        elevation: Layout.ELEVATION,
+				color: Theme.of(context).colorScheme.primary,
+        shape: CircularNotchedRectangle(),
+				notchMargin: Layout.RADIUS,
+				clipBehavior: Clip.antiAlias,
+				child: SizedBox(height: Layout.SPACING * 2.5),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _FABHandler(context),
+        child: Icon(Icons.add),
+      ),
+      body: FutureBuilder(
+          future: _fetchInventory(context),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return LoadingSpinner();
+            }
+            if (snapshot.error != null) {
+              return ErrorMessage(ctx);
+            }
+            return BuildProductList(context);
+          }),
     );
   }
 
-  void _appBarHandler(context) {
+  void _FABHandler(context) {
     Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: 'add');
   }
 

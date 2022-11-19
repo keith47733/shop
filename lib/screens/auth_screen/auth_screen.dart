@@ -19,7 +19,6 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final deviceSize = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -77,12 +76,13 @@ class AuthScreen extends StatelessWidget {
 
 Widget titleImage(context) {
   return Padding(
-      padding: const EdgeInsets.only(
-        top: Layout.SPACING * 1.5,
-        left: Layout.SPACING * 2,
-        right: Layout.SPACING * 2,
-      ),
-      child: Image.asset('assets/images/shopping.png'));
+    padding: const EdgeInsets.only(
+      top: Layout.SPACING * 1.5,
+      left: Layout.SPACING * 2,
+      right: Layout.SPACING * 2,
+    ),
+    child: Image.asset('assets/images/shopping.png'),
+  );
 }
 
 Widget titleBanner(context) {
@@ -122,40 +122,21 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-
-
-
-  // *** Because I deviated from how the AuthScreen() is built/looks, this animation demo just animates the height: of the SizedBox when switching between Login/Signup. In the course, this animated between the card's fixed height for each state.
-  // This is to set up a completely manual animation. First need an AnimationController class. Also need an Animation object, but need to tell Dart what Object we want to animate. Both Animation classes should be configured when the State object is intitalized (ie, in initState()).
   AnimationController? _animationController;
-  // Animation<Size>? _heightAnimation;
   Animation<Offset>? _slideAnimation;
   Animation<double>? _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
-    // An AnimationController class requries two values (1) vsync: gives the AnimationController a pointer to a widget that is animated only when that widget is visible to the user on the screen. Typically this will point to the State object 'this'. This requires a SingleTickerProviderStateMixin which adds methods/properties to allow us to determine if the animatino object is visible and also when a frame update is due so we can play the animatino smoothly. The AnimationController class also requries (2) duration: which tells Flutter how long the animation cycle should take.
-    // The AnimationController is of type double, but you have to watch your null safety.
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 400),
     );
-    // The generic Animation<> class is set to a generic Tween<>() class which knows how to interpolate values between two frames. Tween<Size> takes a begin: Size(width, height) and end: Size(width, height) with the .animate() method that takes a parent: which is what it controls via the AnimationController and a curve which controls how the animation is applied over time.
-    // _heightAnimation = Tween<Size>(
-    //   begin: Size(double.infinity, 0),
-    //   end: Size(double.infinity, Layout.SPACING),
-    // ).animate(CurvedAnimation(
-    //   parent: _animationController!,
-    //   curve: Curves.easeInOut,
-    // ));
-    // Finally, we need to add a listener to the _heightAnimation. Thus any time the state of the Animation changes, it will redraw the screen.
-    // // _heightAnimation!.addListener(() => setState(() {}));
-    // Instead of managing the animation with a listener() and calling setState(), we can use the built-in AnimatedBuilder() widget.
     _opacityAnimation = Tween(
       begin: 0.0,
       end: 1.0,
@@ -166,15 +147,14 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
       ),
     );
     _slideAnimation = Tween<Offset>(
-      // The begin: and end: offsets are relative to where its final position will normally be.
       begin: Offset(0, -0.5),
       end: Offset(0, 0),
-    ).animate(CurvedAnimation(
-      parent: _animationController!,
-      curve: Curves.easeInOut,
-    ));
-			_emailController.text = 'a@a.com';
-			_passwordController.text = '123456';
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController!,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   @override
@@ -223,31 +203,32 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
           _authData['email']!,
           _authData['password']!,
         );
+				_switchAuthMode();
       }
     } on HttpException catch (httpError) {
       final error = httpError.toString();
       if (error.contains('EMAIL_EXISTS')) {
-        errorMessage = 'This email address is already in use by another account.';
+        errorMessage = 'This email address is already in use by another account';
       } else if (error.contains('TOO_MANY_ATTEMPTS_TRY_LATER')) {
-        errorMessage = 'Too many failed login attempts. Please try again later.';
+        errorMessage = 'Too many failed login attempts. Please try again later';
       } else if (error.contains('INVALID EMAIL')) {
-        errorMessage = 'This is not a valid email address.';
+        errorMessage = 'Please enter a valid email address';
       } else if (error.contains('WEAK_PASSWORD')) {
-        errorMessage = 'This password is too weak. Please enter another password.';
+        errorMessage = 'Please choose a more secure password';
       } else if (error.contains('EMAIL_NOT_FOUND')) {
-        errorMessage = 'There is no user record with this email address.';
+        errorMessage = 'There is no user record with this email address';
       } else if (error.contains('INVALID_PASSWORD')) {
-        errorMessage = 'The password is invalid.';
+        errorMessage = 'Please enter a valid password';
       } else {
-        errorMessage = 'Authentication failed.';
+        errorMessage = 'Please try again later';
       }
       showErrorDialog(
         context,
-        'Oops, an error has occurred',
+        'Authentication error',
         errorMessage,
       );
     } catch (error) {
-      errorMessage = 'Could not authenticate you. Please try again later.';
+      errorMessage = 'Please try again later.';
       showErrorDialog(
         context,
         'Server error',
@@ -261,7 +242,6 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
   }
 
   void _switchAuthMode() {
-    // We initiate the animation whenever we swtich the AuthMode with the animationController .forward() or .reverse().
     if (_authMode == AuthMode.Login) {
       setState(() {
         _authMode = AuthMode.Signup;
@@ -292,19 +272,8 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
             SizedBox(height: Layout.SPACING),
             passwordFormField(),
             SizedBox(height: Layout.SPACING),
-            // // if (_authMode == AuthMode.Signup) confirmPasswordFormField(_authMode),
             confirmPasswordFormField(_authMode),
             if (_authMode == AuthMode.Signup) SizedBox(height: Layout.SPACING),
-            // The AnimatedBuilder will use the animation and controller but only rebuild the widget(s) wrapped in it (like a Consumer) rather than using a listener()/setState to rebuild the entire widget tree.
-            // Like the listener/setState, the height: needs to be tied to the animation.
-            // AnimatedBuilder(
-            //   animation: _heightAnimation!,
-            //   // The builder provides a context and child. The child is the portion of widget tree that IS animated. The rest of the widget tree is a child: of the AnimatedBuilder widget (not the builder:). In this modified case, I'm only animated the SizedBox height: which has no nested widgets.
-            //   builder: (ctx, _) => SizedBox(
-            //     height: _heightAnimation!.value.height,
-            //   ),
-            // ),
-            // The AnimatedContainer replaces the Container widget and automatically detects changes in height, width, margins, padding, etc and do all the heavy lifting to animate between two different states defined by, for example, a ternary operator. You don't need AnimationController or Controller. I don't use a Container in my UI.
             if (_isLoading) CircularProgressIndicator() else signupLoginButton(),
             switchAuthModeButton(),
           ],
@@ -365,12 +334,9 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
   }
 
   Widget confirmPasswordFormField(_authMode) {
-    // The FadeTransition uses opacity: controlled dynamically by an AnimationController and Animation<>. FadeTransition does all the heavy lifting of setting up a listener/setState. We can use _animationController defined above if we're happy with the duration. But we need an Animation<Opacity>, which is simply an Animation<double>, to dynamically control the opacity. We still need to trigger the animation in forward/reverse in _switchAuthMode above.
-    // Now we can remove the ternary operator to determine if the form field is shown and wrap the FadeTransition in a AnimatedContainer whose height changes depending on AuthMode.
     return AnimatedContainer(
       duration: Duration(milliseconds: 400),
       constraints: BoxConstraints(
-        // minHeight: _authMode == AuthMode.Signup ? 60 : 0,
         maxHeight: _authMode == AuthMode.Signup ? 120 : 0,
       ),
       child: FadeTransition(
@@ -430,7 +396,7 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
         textStyle: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      child: Text('${_authMode == AuthMode.Login ? 'Signup' : 'Login'} Instead'),
+      child: Text('${_authMode == AuthMode.Login ? 'Signup' : 'Login'}'),
       onPressed: _switchAuthMode,
     );
   }

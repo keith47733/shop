@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../styles/layout.dart';
+import '../styles/layout.dart';
 
 class Badge extends StatelessWidget {
   final Widget child;

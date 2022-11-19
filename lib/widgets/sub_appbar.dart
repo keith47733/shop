@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../styles/layout.dart';
 
-class MyAppBar extends StatelessWidget with PreferredSizeWidget {
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
+class SubAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
   final Icon? icon;
   final VoidCallback? handler;
 
-  MyAppBar(this.title, this.icon, this.handler);
+  SubAppbar(this.title, this.icon, this.handler);
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-			elevation: Layout.ELEVATION,
+      elevation: Layout.ELEVATION,
       title: Text(
         title,
+				maxLines: 2,
         style: TextStyle(fontFamily: 'Oswald'),
       ),
       actions: [

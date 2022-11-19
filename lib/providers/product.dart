@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/http_exception.dart';
-import '../widgets/my_snack_bar.dart';
 
 class Product with ChangeNotifier {
   final String productId;
@@ -24,31 +23,22 @@ class Product with ChangeNotifier {
     this.isFavourite = false,
   });
 
-  Future<void> toggleFavourite(context, authToken, userId) async {
+  Future<void> toggleFavourite(context, uid, authToken) async {
     final url = Uri.parse(
-        'https://shop-8727a-default-rtdb.firebaseio.com/user_favourites/$userId/$productId.json?auth=$authToken');
-
-    isFavourite = !isFavourite;
-    notifyListeners();
+        'https://shop-8727a-default-rtdb.firebaseio.com/user_favourites/$uid/$productId.json?auth=$authToken');
 
     try {
       final response = await http.put(
         url,
-        body: json.encode(isFavourite),
+        body: json.encode(!isFavourite),
       );
       if (response.statusCode >= 400) {
-        throw HttpException('Could not save favourite status');
-      } else {
-        if (isFavourite) {
-          MySnackBar(context, 'Added $title to favourites');
-        } else {
-          MySnackBar(context, 'Removed $title from favourites');
-        }
+        throw HttpException('Auth error');
       }
-    } catch (error) {
       isFavourite = !isFavourite;
       notifyListeners();
-      MySnackBar(context, 'Could not update favourites');
+    } catch (error) {
+      throw error;
     }
   }
 }

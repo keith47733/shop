@@ -1,9 +1,12 @@
-import 'package:Shop/widgets/show_confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/http_exception.dart';
 import '../../providers/inventory.dart';
 import '../../styles/layout.dart';
+import '../../widgets/my_snack_bar.dart';
+import '../../widgets/show_confirm_dialog.dart';
+import '../../widgets/show_error_dialog.dart';
 import 'edit_product_screen.dart';
 
 class UserProductTile extends StatelessWidget {
@@ -48,9 +51,7 @@ class UserProductTile extends StatelessWidget {
                 icon: Icon(Icons.edit),
               ),
               IconButton(
-                onPressed: () async {
-                  _deleteProduct(context, productItemId);
-                },
+                onPressed: () => _deleteProduct(context, productItemId),
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                 icon: Icon(Icons.delete),
               )
@@ -61,15 +62,30 @@ class UserProductTile extends StatelessWidget {
     );
   }
 
-  void _deleteProduct(context, productItemId) async {
-    final confirmDelete = await showConfirmDialog(
+  Future<void> _deleteProduct(context, productItemId) async {
+    final _confirmDelete = await showConfirmDialog(
       context,
       'Remove product',
       'Are you sure you want to remove $title from your inventory?',
     );
-    if (confirmDelete!) {
-      // Navigator.of(context).pop();
-      Provider.of<Inventory>(context, listen: false).deleteProduct(productItemId);
+    if (_confirmDelete == false) {
+      return;
+    }
+    try {
+      await Provider.of<Inventory>(context, listen: false).deleteProduct(productItemId);
+      MySnackBar(context, '$title was removed from your inventory');
+    } on HttpException catch (httpError) {
+      showErrorDialog(
+        context,
+        'Authentication error',
+        'Unable to remove $title from inventory. Please try again later.',
+      );
+    } catch (error) {
+      showErrorDialog(
+        context,
+        'Server error',
+        'Uanble to remove $title from inventory. Please try again later.',
+      );
     }
   }
 }

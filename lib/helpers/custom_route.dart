@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// MaterialPageRoute is a generic class, so add <T> as placeholder. This CustomRoute could be customized for individual routing. The CustomPageTransitionBuilder below is applied to all screen transitions.
 class CustomRoute<T> extends MaterialPageRoute<T> {
   CustomRoute({
     required WidgetBuilder builder,

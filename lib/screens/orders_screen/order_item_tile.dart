@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../providers/order_product.dart';
+import '../../providers/order_detail.dart';
 import '../../styles/layout.dart';
 
 class OrderItemTile extends StatefulWidget {
   final int index;
-  final OrderProduct orderItem;
+  final OrderDetail orderItem;
 
   OrderItemTile({
     required this.index,

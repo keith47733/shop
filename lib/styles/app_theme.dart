@@ -12,9 +12,7 @@ class AppTheme {
       fontFamily: 'SourceSansPro',
       colorScheme: scheme,
       pageTransitionsTheme: PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CustomPageTransitionBuilder(),
-        },
+        builders: {TargetPlatform.android: CustomPageTransitionBuilder()},
       ),
     );
   }
@@ -26,9 +24,7 @@ class AppTheme {
       fontFamily: 'SourceSansPro',
       colorScheme: scheme,
       pageTransitionsTheme: PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CustomPageTransitionBuilder(),
-        },
+        builders: {TargetPlatform.android: CustomPageTransitionBuilder()},
       ),
     );
   }

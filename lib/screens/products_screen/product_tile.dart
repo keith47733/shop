@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/cart.dart';
 import '../../../styles/layout.dart';
+import '../../models/http_exception.dart';
 import '../../providers/auth.dart';
 import '../../providers/product.dart';
 import '../../widgets/my_snack_bar.dart';
+import '../../widgets/show_error_dialog.dart';
 import '../product_detail_screen/product_detail_screen.dart';
 
 class ProductTile extends StatelessWidget {
@@ -25,10 +27,8 @@ class ProductTile extends StatelessWidget {
         },
         child: GridTile(
           header: GridTileHeader(context, product),
-          // The Hero animation is used between two different screens. It requries a unique tag that can be anything. The productId is ideal in this situation.
           child: Hero(
             tag: product.productId,
-            // The FadeInImage animation will show the placeholder: and crossfade it with the image:  In this case an AssetImage to a NetworkImage once loaded.
             child: FadeInImage(
               placeholder: AssetImage('assets/images/product_placeholder.png'),
               image: NetworkImage(product.imageUrl),
@@ -57,8 +57,10 @@ class ProductTile extends StatelessWidget {
             child: Text(
               '\$${product.price.toStringAsFixed(2)}',
               textAlign: TextAlign.center,
-              style:
-                  Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSecondary,
+										fontFamily: 'Oswald',
+                  ),
             ),
           ),
         ),
@@ -66,18 +68,31 @@ class ProductTile extends StatelessWidget {
     );
   }
 
+  Future<void> _toggleFavourite(context, product) async {
+    try {
+      await product.toggleFavourite(
+        context,
+        Provider.of<Auth>(context, listen: false).getUid,
+        Provider.of<Auth>(context, listen: false).getToken,
+      );
+      if (product.isFavourite == true) {
+        MySnackBar(context, '${product.title} added to your favourites');
+      } else {
+        MySnackBar(context, '${product.title} removed from your favourites');
+      }
+    } on HttpException catch (httpError) {
+      showErrorDialog(context, 'Authentication error', 'Unable to update favourites. Please try again later.');
+    } catch (error) {
+			showErrorDialog(context, 'Server error', 'Unable to update favourites. Please try again later.');
+    }
+  }
+
   Widget GridTileFooter(context, product, cart) {
     return GridTileBar(
       backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.7),
       leading: Consumer<Product>(
         builder: (ctx, product, _) => IconButton(
-          onPressed: () {
-            product.toggleFavourite(
-              context,
-              Provider.of<Auth>(context, listen: false).getAuthToken,
-              Provider.of<Auth>(context, listen: false).getUserId,
-            );
-          },
+          onPressed: () => _toggleFavourite(context, product),
           icon: product.isFavourite
               ? Icon(
                   Icons.favorite,
